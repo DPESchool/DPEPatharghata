@@ -220,7 +220,7 @@ body{font-family:'Hind Siliguri',sans-serif;background:var(--bg);color:var(--tex
 .mp-back{background:rgba(255,255,255,.15);border:none;border-radius:20px;height:34px;padding:0 12px;display:flex;align-items:center;gap:4px;cursor:pointer;color:#fff;font-size:13px;font-weight:600;font-family:'Hind Siliguri',sans-serif;white-space:nowrap}
 .mp-title{font-size:16px;font-weight:700;color:#fff}
 .mp-body{padding:20px 16px 60px;max-width:700px;margin:0 auto}
-.office-img-ph{width:100%;height:160px;background:linear-gradient(135deg,#1A4A7A22,#2563A822);border-radius:var(--r);display:flex;align-items:center;justify-content:center;font-size:60px;margin-bottom:16px}
+.office-img-ph{width:100%;height:160px;background:linear-gradient(135deg,#1A4A7A22,#2563A822);border-radius:var(--r);display:flex;align-items:center;justify-content:center;font-size:60px;margin-bottom:16px;overflow:hidden;position:relative}
 .office-article{font-size:14px;line-height:1.8;color:var(--text)}
 .office-article p{margin-bottom:12px}
 .staff-card{background:#fff;border-radius:var(--rs);padding:14px 16px;border:1.5px solid var(--border);box-shadow:var(--sh);margin-bottom:10px;display:flex;align-items:center;gap:14px}
@@ -366,6 +366,7 @@ body{font-family:'Hind Siliguri',sans-serif;background:var(--bg);color:var(--tex
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 </head>
 <body>
 
@@ -389,7 +390,7 @@ body{font-family:'Hind Siliguri',sans-serif;background:var(--bg);color:var(--tex
 <div class="drawer-overlay" id="drawerOverlay" onclick="closeDrawer()"></div>
 <div class="drawer" id="drawer">
   <div class="drawer-hdr">
-    <img src="logo.png" alt="Logo" class="drawer-logo-img" onerror="this.style.display='none';document.getElementById('drawerLogoFallback').style.display='flex'">
+    <img src="menu.jpg" alt="Logo" class="drawer-logo-img" onerror="this.style.display='none';document.getElementById('drawerLogoFallback').style.display='flex'">
     <div class="drawer-logo" id="drawerLogoFallback" style="display:none">🏫</div>
   </div>
   <div class="drawer-body">
@@ -428,12 +429,11 @@ body{font-family:'Hind Siliguri',sans-serif;background:var(--bg);color:var(--tex
 <div class="menu-page" id="mp-office">
   <div class="mp-hdr"><button class="mp-back" onclick="closeMP('office')">← Back</button><div class="mp-title">শিক্ষা অফিস পরিচিতি</div></div>
   <div class="mp-body">
-    <div class="office-img-ph">🏫</div>
-    <div class="office-article">
-      <p>পাথরঘাটা উপজেলা প্রাথমিক শিক্ষা অফিস বরগুনা জেলার পাথরঘাটা উপজেলায় অবস্থিত। এই অফিসটি উপজেলার সকল সরকারি প্রাথমিক বিদ্যালয়ের প্রশাসনিক ও একাডেমিক কার্যক্রম পরিচালনা করে থাকে।</p>
-      <p>উপজেলায় মোট ৬টি ক্লাস্টারে বিভক্ত বিদ্যালয়গুলোতে কর্মরত শিক্ষকদের পেশাগত উন্নয়ন, প্রশিক্ষণ ও তদারকির দায়িত্ব এই অফিসের।</p>
-      <p>উপজেলা শিক্ষা অফিসারের নেতৃত্বে সহকারী উপজেলা শিক্ষা অফিসারগণ নিরলসভাবে প্রাথমিক শিক্ষার মানোন্নয়নে কাজ করে যাচ্ছেন।</p>
+    <div class="office-img-ph" id="officeImgPh">
+      <img src="upazilla.jpg" alt="উপজেলা" style="width:100%;height:100%;object-fit:cover;border-radius:var(--r)" onerror="this.remove();document.getElementById('officeImgPhFallback').style.display='flex'">
+      <div id="officeImgPhFallback" style="display:none;width:100%;height:100%;align-items:center;justify-content:center;font-size:60px">🏫</div>
     </div>
+    <div class="office-article" id="officeArticleText"></div>
   </div>
 </div>
 
@@ -828,6 +828,25 @@ body{font-family:'Hind Siliguri',sans-serif;background:var(--bg);color:var(--tex
 // CONFIG
 // ══════════════════════════════
 const ADMIN_EMAIL = "nifahad.teacher@gmail.com";
+
+// ══════════════════════════════
+// EMAILJS CONFIG (পাসওয়ার্ড রিলেটেড ইমেইল নোটিফিকেশন পাঠানোর জন্য)
+// ══════════════════════════════
+const EMAILJS_PUBLIC_KEY = "FTl78PAPj2NKy5syl";
+const EMAILJS_SERVICE_ID = "service_ntdmqhs";
+const EMAILJS_TPL_MASTER_PW_CHANGED = "template_9tsks35"; // Master Password Changed
+const EMAILJS_TPL_PW_REQUEST = "template_gjkklqg"; // Password Request
+if (window.emailjs) { emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY }); }
+
+// EmailJS দিয়ে ইমেইল পাঠানোর সাধারণ ফাংশন
+function sendEmailNotification(templateId, params) {
+  if (!window.emailjs) { console.warn('EmailJS লোড হয়নি'); return Promise.reject(new Error('emailjs not loaded')); }
+  return emailjs.send(EMAILJS_SERVICE_ID, templateId, params);
+}
+// একই কাজ কিন্তু ব্যর্থ হলে শুধু কনসোলে লগ করে — যেসব জায়গায় ইমেইল ব্যর্থ হলেও মূল কাজ আটকানো উচিত না (যেমন পাসওয়ার্ড পরিবর্তনের নোটিফিকেশন)
+function sendEmailNotificationSilent(templateId, params) {
+  return sendEmailNotification(templateId, params).catch(e => console.error('EmailJS পাঠাতে ব্যর্থ:', e));
+}
 
 // ══════════════════════════════
 // OFFICE DATA
@@ -7938,6 +7957,12 @@ function ensureAnonymousAuth() {
 // যাতে যেকোনো উপজেলা শিক্ষা অফিস এই অ্যাপটি নিজেদের নাম দিয়ে ব্যবহার করতে পারে।
 // শুধু "উপজেলা শিক্ষা অফিস" শিরোনামটি ফিক্সড থাকবে।
 let UPAZILA_SUBTITLE = 'পাথরঘাটা, বরগুনা';
+// "শিক্ষা অফিস পরিচিতি" পেজের আর্টিকেল টেক্সট — Developer সেকশন থেকে পরিবর্তনযোগ্য
+let OFFICE_ARTICLE = `পাথরঘাটা উপজেলা প্রাথমিক শিক্ষা অফিস বরগুনা জেলার পাথরঘাটা উপজেলায় অবস্থিত। এই অফিসটি উপজেলার সকল সরকারি প্রাথমিক বিদ্যালয়ের প্রশাসনিক ও একাডেমিক কার্যক্রম পরিচালনা করে থাকে।
+
+উপজেলায় মোট ৬টি ক্লাস্টারে বিভক্ত বিদ্যালয়গুলোতে কর্মরত শিক্ষকদের পেশাগত উন্নয়ন, প্রশিক্ষণ ও তদারকির দায়িত্ব এই অফিসের।
+
+উপজেলা শিক্ষা অফিসারের নেতৃত্বে সহকারী উপজেলা শিক্ষা অফিসারগণ নিরলসভাবে প্রাথমিক শিক্ষার মানোন্নয়নে কাজ করে যাচ্ছেন।`;
 // ══════════════════════════════
 // FIREBASE: SEED (প্রথমবার ডাটাবেস খালি থাকলে সিড ডেটা বসিয়ে দেয়)
 // ══════════════════════════════
@@ -7976,7 +8001,7 @@ async function seedFirebaseIfEmpty() {
   }
   const appSnap = await db.collection("settings").doc("app").get();
   if (!appSnap.exists) {
-    await db.collection("settings").doc("app").set({ subtitle: UPAZILA_SUBTITLE, devInfo: devInfo });
+    await db.collection("settings").doc("app").set({ subtitle: UPAZILA_SUBTITLE, devInfo: devInfo, officeArticle: OFFICE_ARTICLE });
   }
 }
 
@@ -8019,6 +8044,8 @@ function loadAppSettings() {
     const d = doc.data();
     if (d.subtitle) UPAZILA_SUBTITLE = d.subtitle;
     if (d.devInfo) devInfo = d.devInfo;
+    if (d.officeArticle) OFFICE_ARTICLE = d.officeArticle;
+    if (document.getElementById('mp-office')?.classList.contains('open')) renderOfficeArticle();
     refreshCurrentView();
   });
 }
@@ -8396,11 +8423,17 @@ function openDrawer(){ document.getElementById('drawer').classList.add('open'); 
 function closeDrawer(){ document.getElementById('drawer').classList.remove('open'); document.getElementById('drawerOverlay').classList.remove('open'); }
 function openMP(id){
   closeDrawer();
+  if(id==='office') renderOfficeArticle();
   if(id==='ueo') renderUEO();
   if(id==='aueo') renderAUEO();
   if(id==='staff') renderStaff();
   pushState('mp-'+id);
   setTimeout(()=>document.getElementById('mp-'+id).classList.add('open'),60);
+}
+function renderOfficeArticle(){
+  const el = document.getElementById('officeArticleText');
+  if(!el) return;
+  el.innerHTML = OFFICE_ARTICLE.split(/\n\s*\n/).map(p => `<p>${p.trim().replace(/\n/g,'<br>')}</p>`).join('');
 }
 function closeMP(id){ document.getElementById('mp-'+id).classList.remove('open'); }
 
@@ -9096,6 +9129,11 @@ function renderSettingsMain() {
       <div class="settings-lbl">উপজেলা / জেলার নাম পরিবর্তন</div>
       <span class="settings-chev">›</span>
     </button>
+    <button class="settings-row" onclick="renderOfficeArticleSettings()">
+      <div class="settings-icon-box" style="background:#F0FDF4">📝</div>
+      <div class="settings-lbl">শিক্ষা অফিস পরিচিতি লেখা এডিট</div>
+      <span class="settings-chev">›</span>
+    </button>
     <div class="sec-lbl" style="margin-top:16px">ডেভেলপার</div>
     <button class="settings-row" onclick="renderDevInfoEdit()">
       <div class="settings-icon-box" style="background:#F5F3FF">👨‍💻</div>
@@ -9134,6 +9172,37 @@ function doChangeAppSubtitle() {
       if(document.getElementById('page-clusters').classList.contains('active')) {
         setHeader('উপজেলা শিক্ষা অফিস', UPAZILA_SUBTITLE, false, data.clusters.length+' ক্লাস্টার');
       }
+      alert('✅ পরিবর্তন হয়েছে!');
+    })
+    .catch(e=>alert('❌ সংরক্ষণ ব্যর্থ: '+e.message));
+}
+
+// ══════════════════════════════
+// শিক্ষা অফিস পরিচিতি — আর্টিকেল টেক্সট এডিট (উপজেলা সংক্রান্ত তথ্য পরিবর্তন)
+// ══════════════════════════════
+function renderOfficeArticleSettings() {
+  document.getElementById('settingsBody').innerHTML = `
+    <button class="settings-row" style="margin-bottom:12px;background:#F8FAFC" onclick="renderSettingsMain()">
+      <div class="settings-icon-box" style="background:#EEF2FF">←</div>
+      <div class="settings-lbl">সেটিংসে ফিরুন</div>
+    </button>
+    <div class="sec-lbl">শিক্ষা অফিস পরিচিতি — লেখা</div>
+    <div style="background:#fff;border:1.5px solid var(--border);border-radius:14px;padding:16px">
+      <div style="font-size:12.5px;color:var(--sub);margin-bottom:12px">"শিক্ষা অফিস পরিচিতি" পেজে যে লেখাটি দেখা যায়, সেটি এখান থেকে পরিবর্তন করুন। প্রতিটি অনুচ্ছেদের (paragraph) মাঝে একটি ফাঁকা লাইন দিন।</div>
+      <div class="f-group" style="margin-bottom:10px">
+        <label class="f-lbl">আর্টিকেল টেক্সট</label>
+        <textarea class="f-input" id="officeArticleInput" rows="10" style="resize:vertical;font-family:'Hind Siliguri',sans-serif">${OFFICE_ARTICLE}</textarea>
+      </div>
+      <button class="btn-primary" style="width:100%" onclick="doChangeOfficeArticle()">✓ সংরক্ষণ করুন</button>
+    </div>
+  `;
+}
+function doChangeOfficeArticle() {
+  const val = document.getElementById('officeArticleInput').value.trim();
+  if(!val) { alert('❌ খালি রাখা যাবে না!'); return; }
+  db.collection("settings").doc("app").set({ officeArticle: val }, {merge:true})
+    .then(()=>{
+      OFFICE_ARTICLE = val;
       alert('✅ পরিবর্তন হয়েছে!');
     })
     .catch(e=>alert('❌ সংরক্ষণ ব্যর্থ: '+e.message));
@@ -9559,6 +9628,12 @@ function doChangeMasterPw() {
       MASTER_PASSWORD = newPw;
       document.getElementById('changeMasterPwModal').classList.remove('active');
       alert('✅ মাস্টার পাসওয়ার্ড পরিবর্তন হয়েছে!');
+      sendEmailNotificationSilent(EMAILJS_TPL_MASTER_PW_CHANGED, {
+        to_email: ADMIN_EMAIL,
+        email: ADMIN_EMAIL,
+        new_password: newPw,
+        changed_time: new Date().toLocaleString('bn-BD')
+      });
     })
     .catch(e=>alert('❌ সংরক্ষণ ব্যর্থ: '+e.message));
 }
@@ -9608,10 +9683,12 @@ function doSelfPwChange() {
     })
     .catch(e=>alert('❌ সংরক্ষণ ব্যর্থ: '+e.message));
 }
+let forgotPwRequestType = 'পাসওয়ার্ড রিসেট';
 function forgotSchoolPw() {
   document.getElementById('selfPwModal').classList.remove('active');
   let school = null;
   data.clusters.forEach(c=>c.schools.forEach(s=>{ if(s.id===selfPwSchoolId) school=s }));
+  forgotPwRequestType = 'বিদ্যালয়ের পাসওয়ার্ড';
   document.getElementById('forgotPwModal').classList.add('active');
   document.getElementById('forgotName').value='';
   document.getElementById('forgotMsg').value = school ? ('স্কুল: '+school.name+' (পাসওয়ার্ড নং: '+school.num+')') : '';
@@ -9643,6 +9720,7 @@ function doOfficeSelfPwChange() {
 }
 function forgotOfficeSelfPw() {
   document.getElementById('officeSelfPwModal').classList.remove('active');
+  forgotPwRequestType = 'উপজেলা অফিসের পাসওয়ার্ড';
   document.getElementById('forgotPwModal').classList.add('active');
   document.getElementById('forgotName').value='';
   document.getElementById('forgotEmail').value='';
@@ -9651,6 +9729,7 @@ function forgotOfficeSelfPw() {
 }
 function forgotMasterPw() {
   document.getElementById('masterPwModal').classList.remove('active');
+  forgotPwRequestType = 'মাস্টার পাসওয়ার্ড';
   document.getElementById('forgotPwModal').classList.add('active');
   document.getElementById('forgotName').value = '';
   document.getElementById('forgotEmail').value = '';
@@ -9662,11 +9741,24 @@ function submitForgotPw() {
   const email = document.getElementById('forgotEmail').value.trim();
   const msg = document.getElementById('forgotMsg').value.trim();
   if(!name) { document.getElementById('forgotError').textContent = 'নাম লিখুন!'; return; }
-  const subject = encodeURIComponent('পাসওয়ার্ড রিসেট অনুরোধ — উপজেলা শিক্ষা অফিস অ্যাপ');
-  const body = encodeURIComponent('নাম: ' + name + (email?'\nইমেইল: '+email:'') + '\nবার্তা: ' + (msg||'পাসওয়ার্ড ভুলে গেছি') + '\n\nসময়: ' + new Date().toLocaleString('bn-BD'));
-  window.open('mailto:' + ADMIN_EMAIL + '?subject=' + subject + '&body=' + body);
-  document.getElementById('forgotPwModal').classList.remove('active');
-  alert('✅ অনুরোধ পাঠানো হয়েছে! Developer শীঘ্রই যোগাযোগ করবেন।');
+  const btn = document.querySelector('#forgotPwModal .dir-btn-primary');
+  if(btn){ btn.disabled = true; btn.textContent = 'পাঠানো হচ্ছে...'; }
+  sendEmailNotification(EMAILJS_TPL_PW_REQUEST, {
+    to_email: ADMIN_EMAIL,
+    from_name: name,
+    from_email: email || 'দেওয়া হয়নি',
+    email: email || ADMIN_EMAIL,
+    request_type: forgotPwRequestType,
+    message: msg || 'পাসওয়ার্ড ভুলে গেছি',
+    sent_time: new Date().toLocaleString('bn-BD')
+  }).then(()=>{
+    document.getElementById('forgotPwModal').classList.remove('active');
+    alert('✅ অনুরোধ পাঠানো হয়েছে! Developer শীঘ্রই যোগাযোগ করবেন।');
+  }).catch(()=>{
+    alert('❌ পাঠাতে সমস্যা হয়েছে, একটু পরে আবার চেষ্টা করুন।');
+  }).finally(()=>{
+    if(btn){ btn.disabled = false; btn.textContent = '📧 পাঠান'; }
+  });
 }
 
 // Enter key support
