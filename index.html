@@ -4,6 +4,15 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>পাথরঘাটা উপজেলা প্রাথমিক শিক্ষা ডিরেক্টরি</title>
+<!-- PWA: ইনস্টলযোগ্য অ্যাপ হিসেবে চালানোর জন্য -->
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#1A4A7A">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="পাথরঘাটা শিক্ষা">
 <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
 :root {
@@ -390,8 +399,8 @@ body{font-family:'Hind Siliguri',sans-serif;background:var(--bg);color:var(--tex
 <div class="drawer-overlay" id="drawerOverlay" onclick="closeDrawer()"></div>
 <div class="drawer" id="drawer">
   <div class="drawer-hdr">
-    <img src="menu.jpg" alt="Logo" class="drawer-logo-img" onerror="this.style.display='none';document.getElementById('drawerLogoFallback').style.display='flex'">
-    <div class="drawer-logo" id="drawerLogoFallback" style="display:none">🏫</div>
+    <img src="" alt="Logo" class="drawer-logo-img" id="drawerLogoImg" style="display:none">
+    <div class="drawer-logo" id="drawerLogoFallback" style="display:flex">🏫</div>
   </div>
   <div class="drawer-body">
     <button class="drawer-item" onclick="openMP('office')">
@@ -449,13 +458,21 @@ body{font-family:'Hind Siliguri',sans-serif;background:var(--bg);color:var(--tex
 
 <!-- MENU PAGE: AUEO -->
 <div class="menu-page" id="mp-aueo">
-  <div class="mp-hdr"><button class="mp-back" onclick="closeMP('aueo')">← Back</button><div class="mp-title">সহকারী শিক্ষা অফিসারগণ</div></div>
+  <div class="mp-hdr" style="display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:10px">
+  <button class="mp-back" onclick="closeMP('aueo')">← Back</button>
+  <div class="mp-title" style="text-align:center">সহকারী শিক্ষা অফিসারগণ</div>
+  <button onclick="openOfficeSelfPwModal()" style="background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.2);border-radius:10px;width:34px;height:34px;color:#fff;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;justify-self:end">⚙️</button>
+</div>
   <div class="mp-body" id="aueoBody"></div>
 </div>
 
 <!-- MENU PAGE: STAFF -->
 <div class="menu-page" id="mp-staff">
-  <div class="mp-hdr"><button class="mp-back" onclick="closeMP('staff')">← Back</button><div class="mp-title">অফিস স্টাফ</div></div>
+  <div class="mp-hdr" style="display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:10px">
+  <button class="mp-back" onclick="closeMP('staff')">← Back</button>
+  <div class="mp-title" style="text-align:center">অফিস স্টাফ</div>
+  <button onclick="openOfficeSelfPwModal()" style="background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.2);border-radius:10px;width:34px;height:34px;color:#fff;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;justify-self:end">⚙️</button>
+</div>
   <div class="mp-body" id="staffBody"></div>
 </div>
 
@@ -556,17 +573,11 @@ body{font-family:'Hind Siliguri',sans-serif;background:var(--bg);color:var(--tex
 <div class="dir-modal-overlay" id="forgotPwModal">
   <div class="dir-modal-box">
     <div class="dir-modal-title">🔓 পাসওয়ার্ড ভুলে গেছেন?</div>
-    <div class="dir-modal-sub">Developer এর কাছে রিসেট অনুরোধ পাঠান</div>
-    <div style="text-align:left;margin-bottom:6px;font-size:12px;font-weight:600;color:#64748B">আপনার নাম</div>
-    <input class="dir-modal-input" type="text" id="forgotName" placeholder="আপনার নাম লিখুন" style="letter-spacing:0;font-size:14px;text-align:left;padding:11px 14px;margin-bottom:10px">
-    <div style="text-align:left;margin-bottom:6px;font-size:12px;font-weight:600;color:#64748B">ইমেইল (ঐচ্ছিক)</div>
-    <input class="dir-modal-input" type="email" id="forgotEmail" placeholder="example@email.com" style="letter-spacing:0;font-size:14px;text-align:left;padding:11px 14px;margin-bottom:10px">
-    <div style="text-align:left;margin-bottom:6px;font-size:12px;font-weight:600;color:#64748B">বার্তা (ঐচ্ছিক)</div>
-    <textarea id="forgotMsg" placeholder="কোনো বার্তা থাকলে লিখুন..." style="width:100%;padding:11px 14px;border-radius:10px;border:1.5px solid #E2E8F0;font-size:14px;outline:none;font-family:'Hind Siliguri',sans-serif;resize:none;height:80px;margin-bottom:4px"></textarea>
+    <div class="dir-modal-sub" id="forgotPwSub">বর্তমান পাসওয়ার্ড আপনার নিবন্ধিত ইমেইলে পাঠানো হবে</div>
     <div class="dir-modal-error" id="forgotError"></div>
     <div class="dir-modal-btns">
       <button class="dir-btn-secondary" onclick="document.getElementById('forgotPwModal').classList.remove('active')">বাতিল</button>
-      <button class="dir-btn-primary" onclick="submitForgotPw()">📧 পাঠান</button>
+      <button class="dir-btn-primary" id="forgotPwSendBtn" onclick="submitForgotPw()">📧 ইমেইলে পাঠান</button>
     </div>
   </div>
 </div>
@@ -7934,6 +7945,48 @@ const firebaseConfig = {
 };
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
+
+// ══════════════════════════════
+// IMGBB CONFIG — সব ছবি (অফিসার/স্টাফ/ডেভেলপার/মেনু লোগো) এখন Firestore-এর বদলে
+// imgbb-তে আপলোড হয়, শুধু ছোট্ট URL (লিংক) টা Firestore-এ সংরক্ষিত থাকে।
+// এতে Firestore-এর ১MB ডকুমেন্ট লিমিটের সমস্যা হয় না।
+// ══════════════════════════════
+const IMGBB_API_KEY = "da10d1a56e6e177a03d9d267f26d5b6d"; // পাথরঘাটা প্রজেক্টের imgbb API key (https://api.imgbb.com/)
+
+// ফাইল থেকে imgbb-তে আপলোড করে ডাইরেক্ট ইমেজ URL রিটার্ন করে
+function uploadImageToImgbb(file) {
+  return new Promise((resolve, reject) => {
+    if (!file) { reject(new Error('কোনো ফাইল নির্বাচিত হয়নি')); return; }
+    if (!file.type.startsWith('image/')) { reject(new Error('শুধুমাত্র ছবি ফাইল নির্বাচন করুন!')); return; }
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      // বড় ছবি আগে ক্যানভাসে ছোট করে নেওয়া হয় (আপলোড দ্রুত করতে ও ডেটা বাঁচাতে)
+      const img = new Image();
+      img.onload = function() {
+        let maxDim = 700, w = img.width, h = img.height;
+        if (w > h && w > maxDim) { h = Math.round(h * maxDim / w); w = maxDim; }
+        else if (h >= w && h > maxDim) { w = Math.round(w * maxDim / h); h = maxDim; }
+        const canvas = document.createElement('canvas');
+        canvas.width = w; canvas.height = h;
+        canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+        const base64 = canvas.toDataURL('image/jpeg', 0.85).split(',')[1];
+        const form = new FormData();
+        form.append('image', base64);
+        fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, { method: 'POST', body: form })
+          .then(r => r.json())
+          .then(json => {
+            if (json && json.success && json.data && json.data.url) resolve(json.data.url);
+            else reject(new Error((json && json.error && json.error.message) || 'imgbb আপলোড ব্যর্থ হয়েছে'));
+          })
+          .catch(err => reject(err));
+      };
+      img.onerror = function(){ reject(new Error('ছবিটি লোড করা যায়নি!')); };
+      img.src = e.target.result;
+    };
+    reader.onerror = function(){ reject(new Error('ছবি পড়তে সমস্যা হয়েছে!')); };
+    reader.readAsDataURL(file);
+  });
+}
 db.enablePersistence({ synchronizeTabs: true }).catch(()=>{});
 const auth = firebase.auth();
 // ব্যবহারকারীর অজান্তেই একটা অস্থায়ী (anonymous) পরিচয় তৈরি হয় —
@@ -7957,6 +8010,22 @@ function ensureAnonymousAuth() {
 // যাতে যেকোনো উপজেলা শিক্ষা অফিস এই অ্যাপটি নিজেদের নাম দিয়ে ব্যবহার করতে পারে।
 // শুধু "উপজেলা শিক্ষা অফিস" শিরোনামটি ফিক্সড থাকবে।
 let UPAZILA_SUBTITLE = 'পাথরঘাটা, বরগুনা';
+// মেনু ড্রয়ারের উপরের ছোট লোগো — Developer সেকশন থেকে পরিবর্তনযোগ্য (imgbb URL, Firestore-এ সংরক্ষিত)
+let APP_LOGO = '';
+function applyDrawerLogo() {
+  const img = document.getElementById('drawerLogoImg');
+  const fallback = document.getElementById('drawerLogoFallback');
+  if (!img || !fallback) return;
+  if (APP_LOGO) {
+    img.src = APP_LOGO;
+    img.style.display = 'block';
+    fallback.style.display = 'none';
+    img.onerror = () => { img.style.display='none'; fallback.style.display='flex'; };
+  } else {
+    img.style.display = 'none';
+    fallback.style.display = 'flex';
+  }
+}
 // "শিক্ষা অফিস পরিচিতি" পেজের আর্টিকেল টেক্সট — Developer সেকশন থেকে পরিবর্তনযোগ্য
 let OFFICE_ARTICLE = `পাথরঘাটা উপজেলা প্রাথমিক শিক্ষা অফিস বরগুনা জেলার পাথরঘাটা উপজেলায় অবস্থিত। এই অফিসটি উপজেলার সকল সরকারি প্রাথমিক বিদ্যালয়ের প্রশাসনিক ও একাডেমিক কার্যক্রম পরিচালনা করে থাকে।
 
@@ -8045,6 +8114,7 @@ function loadAppSettings() {
     if (d.subtitle) UPAZILA_SUBTITLE = d.subtitle;
     if (d.devInfo) devInfo = d.devInfo;
     if (d.officeArticle) OFFICE_ARTICLE = d.officeArticle;
+    if (typeof d.menuLogo === 'string') { APP_LOGO = d.menuLogo; applyDrawerLogo(); }
     if (document.getElementById('mp-office')?.classList.contains('open')) renderOfficeArticle();
     refreshCurrentView();
   });
@@ -8239,7 +8309,7 @@ function openSchool(id, silent) {
   headGroup.forEach(t=>{ html+=teacherCard(t,school,cluster) });
   html+=`<div class="t-sec-lbl">সহকারী শিক্ষকবৃন্দ</div>`;
   asstGroup.forEach(t=>{ html+=teacherCard(t,school,cluster) });
-  html += `<button class="add-teacher-btn" id="addTeacherTrigger" onclick="showAddTeacherForm('${school.id}')">+ নতুন শিক্ষক যোগ করুন</button>`;
+  html += `<button class="add-teacher-btn" id="addTeacherTrigger" onclick="requireOfficePw(()=>showAddTeacherForm('${school.id}'))">+ নতুন শিক্ষক যোগ করুন</button>`;
   document.getElementById('detailContent').innerHTML=html;
   if(!silent) showPage('detail');
 }
@@ -8262,7 +8332,7 @@ function teacherCard(t,school,cluster) {
       <a class="btn-call" href="tel:${t.phone}" style="width:44px;height:44px;font-size:18px;flex-shrink:0">📞</a>
     </div>
     <div class="t-actions">
-      <button class="off-btn-edit" style="flex:1" onclick="openModal('${t.id}','${school.id}','${cluster.id}')">✏️ সম্পাদনা</button>
+      <button class="off-btn-edit" style="flex:1" onclick="requireOfficePw(()=>openModal('${t.id}','${school.id}','${cluster.id}'))">✏️ সম্পাদনা</button>
       <button class="off-btn-del" style="flex:1" onclick="removeTeacher('${t.id}','${t.name}','${school.id}')">🗑️ বাদ দিন</button>
     </div>
   </div>`;
@@ -8347,20 +8417,16 @@ function doAddTeacher(schoolId) {
 }
 
 function removeTeacher(teacherId, teacherName, schoolId) {
-  let school = null;
-  data.clusters.forEach(c=>c.schools.forEach(s=>{ if(s.id===schoolId) school=s }));
-  if(!school) return;
-  // পাসওয়ার্ড confirm করার জন্য master password modal ব্যবহার
-  masterPendingAction = () => {
+  requireOfficePw(() => {
+    let school = null;
+    data.clusters.forEach(c=>c.schools.forEach(s=>{ if(s.id===schoolId) school=s }));
+    if(!school) return;
     if(!confirm(teacherName + ' কে তালিকা থেকে বাদ দেবেন?')) return;
     const updatedTeachers = school.teachers.filter(t=>t.id!==teacherId);
     db.collection("schools").doc(schoolId).update({ teachers: updatedTeachers })
       .then(()=>{ school.teachers = updatedTeachers; alert('✅ শিক্ষক বাদ দেওয়া হয়েছে!'); openSchool(curSchool); })
       .catch(e=>alert('❌ মুছতে ব্যর্থ: '+e.message));
-  };
-  document.getElementById('masterPwInput').value='';
-  document.getElementById('masterPwError').textContent='';
-  document.getElementById('masterPwModal').classList.add('active');
+  });
 }
 
 // ══════════════════════════════
@@ -8454,72 +8520,23 @@ function officerBadge(d) {
   return '';
 }
 
-// ছবি আপলোড হ্যান্ডলার — অটো কমপ্রেস করে ১৫০KB এর মধ্যে রাখে (Firestore তে সেভ হওয়ার উপযোগী)
+// ছবি আপলোড হ্যান্ডলার — imgbb-তে আপলোড হয়ে শুধু URL টা ফিল্ডে বসে (Firestore-এ সেভ হয় শুধু লিংক)
 function previewOfficerPhoto(input) {
   const file = input.files && input.files[0];
   if (!file) return;
-  if (!file.type.startsWith('image/')) { alert('❌ শুধুমাত্র ছবি ফাইল নির্বাচন করুন!'); input.value=''; return; }
-
-  const reader = new FileReader();
-  reader.onload = function(e) {
-    const img = new Image();
-    img.onload = function() {
-      const TARGET_BYTES = 150 * 1024; // ১৫০KB টার্গেট
-      const MAX_BYTES = 200 * 1024;    // ২০০KB হার্ড লিমিট
-      let maxDim = 500;
-      let w = img.width, h = img.height;
-      if (w > h && w > maxDim) { h = Math.round(h * maxDim / w); w = maxDim; }
-      else if (h >= w && h > maxDim) { w = Math.round(w * maxDim / h); h = maxDim; }
-
-      const canvas = document.createElement('canvas');
-      canvas.width = w; canvas.height = h;
-      const ctx = canvas.getContext('2d');
-      ctx.drawImage(img, 0, 0, w, h);
-
-      let quality = 0.9;
-      let dataUrl = canvas.toDataURL('image/jpeg', quality);
-      const sizeOf = url => Math.round(url.length * 0.75);
-      let tries = 0;
-      while (sizeOf(dataUrl) > TARGET_BYTES && quality > 0.3 && tries < 10) {
-        quality -= 0.08;
-        dataUrl = canvas.toDataURL('image/jpeg', quality);
-        tries++;
-      }
-      // এখনো বড় হলে ডাইমেনশন আরও ছোট করে আবার চেষ্টা
-      if (sizeOf(dataUrl) > MAX_BYTES && maxDim > 250) {
-        const shrink = 350;
-        let w2 = img.width, h2 = img.height;
-        if (w2 > h2 && w2 > shrink) { h2 = Math.round(h2 * shrink / w2); w2 = shrink; }
-        else if (h2 >= w2 && h2 > shrink) { w2 = Math.round(w2 * shrink / h2); h2 = shrink; }
-        canvas.width = w2; canvas.height = h2;
-        ctx.clearRect(0,0,canvas.width,canvas.height);
-        ctx.drawImage(img, 0, 0, w2, h2);
-        dataUrl = canvas.toDataURL('image/jpeg', 0.7);
-      }
-
-      if (sizeOf(dataUrl) > MAX_BYTES) {
-        alert('❌ ছবিটি প্রসেস করার পরও অনেক বড় হচ্ছে, অন্য একটি ছবি চেষ্টা করুন।');
-        input.value = '';
-        return;
-      }
-
-      const photoField = document.getElementById('of_photo');
-      if (photoField) photoField.value = dataUrl;
-
-      const oldPreview = document.getElementById('of_photo_preview');
-      if (oldPreview) {
-        const newImg = document.createElement('img');
-        newImg.id = 'of_photo_preview';
-        newImg.src = dataUrl;
-        newImg.style.cssText = 'width:60px;height:60px;border-radius:50%;object-fit:cover;margin-top:8px;border:2px solid var(--border)';
-        oldPreview.replaceWith(newImg);
-      }
-    };
-    img.onerror = function(){ alert('❌ ছবিটি লোড করা যায়নি!'); input.value=''; };
-    img.src = e.target.result;
-  };
-  reader.onerror = function(){ alert('❌ ছবি পড়তে সমস্যা হয়েছে!'); input.value=''; };
-  reader.readAsDataURL(file);
+  const oldPreview = document.getElementById('of_photo_preview');
+  if (oldPreview) oldPreview.outerHTML = `<div id="of_photo_preview" style="font-size:12px;color:var(--sub);margin-top:8px">⏳ ছবি আপলোড হচ্ছে...</div>`;
+  uploadImageToImgbb(file).then(url => {
+    const photoField = document.getElementById('of_photo');
+    if (photoField) photoField.value = url;
+    const p = document.getElementById('of_photo_preview');
+    if (p) p.outerHTML = `<img id="of_photo_preview" src="${url}" style="width:60px;height:60px;border-radius:50%;object-fit:cover;margin-top:8px;border:2px solid var(--border)">`;
+  }).catch(err => {
+    alert('❌ ছবি আপলোড ব্যর্থ হয়েছে: ' + err.message);
+    input.value = '';
+    const p = document.getElementById('of_photo_preview');
+    if (p) p.outerHTML = `<div id="of_photo_preview"></div>`;
+  });
 }
 
 function openOfficerEditModal(type, id) {
@@ -8535,12 +8552,12 @@ function openOfficerEditModal(type, id) {
   const emailRow = type==='officer'?`<div class="f-group" style="margin-bottom:10px"><label class="f-lbl">ইমেইল (ঐচ্ছিক)</label><input class="f-input" type="email" id="of_email" value="${p.email||''}"></div>`:'';
   const clRow=type==='officer'?`<div class="f-group" style="margin-bottom:10px"><label class="f-lbl">দায়িত্বপ্রাপ্ত ক্লাস্টার (ঐচ্ছিক)</label><input class="f-input" id="of_cluster" value="${p.cluster||''}"></div>`:'';
   const bioRow=type==='officer'?`<div class="f-group" style="margin-bottom:10px"><label class="f-lbl">পরিচিতি (ঐচ্ছিক)</label><input class="f-input" id="of_bio" value="${p.bio||''}"></div>`:'';
-  const photoRow = type==='officer' ? `<div class="f-group" style="margin-bottom:10px">
-      <label class="f-lbl">ছবি (ফাইল আপলোড — সর্বোচ্চ ১৫০KB)</label>
+  const photoRow = `<div class="f-group" style="margin-bottom:10px">
+      <label class="f-lbl">ছবি (ফাইল আপলোড)</label>
       <input type="file" accept="image/*" id="of_photo_file" style="width:100%;padding:8px;border:1.5px solid var(--border);border-radius:10px;font-size:13px" onchange="previewOfficerPhoto(this)">
       ${p.photo?`<img id="of_photo_preview" src="${p.photo}" style="width:60px;height:60px;border-radius:50%;object-fit:cover;margin-top:8px;border:2px solid var(--border)">`:`<div id="of_photo_preview"></div>`}
       <input type="hidden" id="of_photo" value="${p.photo||''}">
-    </div>` : `<input type="hidden" id="of_photo" value="">`;
+    </div>`;
   document.getElementById('officerEditModal').querySelector('.dir-modal-box').innerHTML=`<div style="max-height:75vh;overflow-y:auto">
     <div class="dir-modal-title">${title}</div>
     ${photoRow}
@@ -8604,9 +8621,9 @@ function officerCardHtml(p, type) {
   // শিক্ষকদের মতোই — শূন্য পদ হলে আলাদা "পদটি শূন্য" কার্ড দেখাবে, কোনো এডিট/মুছা বাটন থাকবে না
   if(p.vacant) return `<div class="vacant-card"><span style="font-size:24px">💺</span><span>${p.designation} — পদটি শূন্য</span></div>`;
 
-  const photoHtml = type==='staff' ? '' : (p.photo
+  const photoHtml = p.photo
     ? `<img class="off-photo-circle" src="${p.photo}">`
-    : `<div class="off-photo-circle-placeholder">👤</div>`);
+    : `<div class="off-photo-circle-placeholder">👤</div>`;
   const badge = officerBadge(p.designation||'');
   const clusterLine = p.cluster ? `<div class="off-card-cluster">📍 ${p.cluster}</div>` : '';
   // যার পদবী UEO/চলতি দায়িত্ব — তাকে কার্ড থেকে মুছে ফেলা যাবে না (এডিট করে পদবী বদলাতে হবে), ঠিক প্রধান শিক্ষকের মতো
@@ -8624,8 +8641,8 @@ function officerCardHtml(p, type) {
       <a class="off-call-btn" href="tel:${p.phone||''}">📞</a>
     </div>
     <div class="off-card-actions">
-      <button class="off-btn-edit" onclick="requireOfficePw(()=>openOfficerEditModal('${type}','${p.id}'))">✏️ সম্পাদনা</button>
-      ${canDelete?`<button class="off-btn-del" onclick="requireOfficePw(()=>removeOfficer('${type}','${p.id}'))">🗑️ মুছুন</button>`:''}
+      <button class="off-btn-edit" onclick="requireMasterPw(()=>openOfficerEditModal('${type}','${p.id}'))">✏️ সম্পাদনা</button>
+      ${canDelete?`<button class="off-btn-del" onclick="requireMasterPw(()=>removeOfficer('${type}','${p.id}'))">🗑️ মুছুন</button>`:''}
     </div>
   </div>`;
 }
@@ -8645,7 +8662,7 @@ function ueoBannerCardHtml(p) {
           <a class="ueo-btn-call" href="tel:${p.phone||''}">📞 কল করুন</a>
           <a class="ueo-btn-email" href="mailto:${p.email||''}">📧 ইমেইল</a>
         </div>
-        <button class="off-btn-edit" style="width:100%;margin-top:10px" onclick="requireOfficePw(()=>openOfficerEditModal('officer','${p.id}'))">✏️ সম্পাদনা</button>
+        <button class="off-btn-edit" style="width:100%;margin-top:10px" onclick="requireMasterPw(()=>openOfficerEditModal('officer','${p.id}'))">✏️ সম্পাদনা</button>
       </div>
     </div>
   </div>`;
@@ -8685,13 +8702,13 @@ function renderAUEO(){
   const bySerial = (a,b) => (a.serial||99)-(b.serial||99);
   const aueoGroup = officers.filter(o => !isUEO(o.designation)).sort(bySerial);
   let html = aueoGroup.map(o => officerCardHtml(o,'officer')).join('');
-  html += `<button class="add-teacher-btn" onclick="requireOfficePw(()=>openOfficerEditModal('officer',null))">+ নতুন সহকারী শিক্ষা অফিসার যোগ করুন</button>`;
+  html += `<button class="add-teacher-btn" onclick="requireMasterPw(()=>openOfficerEditModal('officer',null))">+ নতুন সহকারী শিক্ষা অফিসার যোগ করুন</button>`;
   document.getElementById('aueoBody').innerHTML = html;
 }
 
 function renderStaff(){
   let html = (office.staff||[]).map(s => officerCardHtml(s,'staff')).join('');
-  html += `<button class="add-teacher-btn" onclick="requireOfficePw(()=>openOfficerEditModal('staff',null))">+ নতুন স্টাফ যোগ করুন</button>`;
+  html += `<button class="add-teacher-btn" onclick="requireMasterPw(()=>openOfficerEditModal('staff',null))">+ নতুন স্টাফ যোগ করুন</button>`;
   document.getElementById('staffBody').innerHTML = html;
 }
 
@@ -8712,13 +8729,18 @@ function confirmOfficePw(){
     document.getElementById('officePwInputError').textContent='❌ পাসওয়ার্ড ভুল!';
   }
 }
+// ══ পাসওয়ার্ড ভুলে গেলে — সরাসরি বর্তমান পাসওয়ার্ড ADMIN_EMAIL-এ ইমেইল করা হয় ══
+function openForgotPwModal(type, currentValue, extraLabel) {
+  forgotPwRequestType = type;
+  forgotPwCurrentValue = currentValue;
+  forgotPwExtraLabel = extraLabel || '';
+  document.getElementById('forgotPwSub').textContent = `"${type}"${extraLabel ? ' ('+extraLabel+')' : ''} — বর্তমান পাসওয়ার্ডটি ${ADMIN_EMAIL} এ ইমেইল করা হবে`;
+  document.getElementById('forgotError').textContent = '';
+  document.getElementById('forgotPwModal').classList.add('active');
+}
 function forgotOfficePw(){
   document.getElementById('officePwAuthModal').classList.remove('active');
-  document.getElementById('forgotPwModal').classList.add('active');
-  document.getElementById('forgotName').value='';
-  document.getElementById('forgotEmail').value='';
-  document.getElementById('forgotMsg').value='অফিস পাসওয়ার্ড রিসেট প্রয়োজন';
-  document.getElementById('forgotError').textContent='';
+  openForgotPwModal('উপজেলা শিক্ষা অফিসের পাসওয়ার্ড', OFFICE_PASSWORD, '');
 }
 let offPendingAction = null;
 
@@ -8836,14 +8858,14 @@ function renderDevPage() {
         <div class="dev-divider"></div>
         ${extraFields}
         <div class="dev-divider"></div>
-        <div class="dev-contact-row">
+        <a class="dev-contact-row" href="tel:${devInfo.phone}" style="text-decoration:none;color:inherit;cursor:pointer">
           <span class="dev-contact-icon">📞</span>
           <span class="dev-contact-text">${devInfo.phone}</span>
-        </div>
-        <div class="dev-contact-row" style="margin-top:8px">
+        </a>
+        <a class="dev-contact-row" href="mailto:${devInfo.email}" style="margin-top:8px;text-decoration:none;color:inherit;cursor:pointer">
           <span class="dev-contact-icon">📧</span>
           <span class="dev-contact-text">${devInfo.email}</span>
-        </div>
+        </a>
         <div style="text-align:center;margin-top:16px">
           <span class="dev-badge" style="background:linear-gradient(135deg,#1440A0,#1a52c4)">${devInfo.version}</span>
         </div>
@@ -9134,6 +9156,11 @@ function renderSettingsMain() {
       <div class="settings-lbl">শিক্ষা অফিস পরিচিতি লেখা এডিট</div>
       <span class="settings-chev">›</span>
     </button>
+    <button class="settings-row" onclick="renderMenuLogoSettings()">
+      <div class="settings-icon-box" style="background:#FDF3E0">🖼️</div>
+      <div class="settings-lbl">মেনু লোগো পরিবর্তন</div>
+      <span class="settings-chev">›</span>
+    </button>
     <div class="sec-lbl" style="margin-top:16px">ডেভেলপার</div>
     <button class="settings-row" onclick="renderDevInfoEdit()">
       <div class="settings-icon-box" style="background:#F5F3FF">👨‍💻</div>
@@ -9209,6 +9236,54 @@ function doChangeOfficeArticle() {
 }
 
 // ══════════════════════════════
+// মেনু ড্রয়ার লোগো এডিট (Developer Settings-এর ভেতরে, imgbb-তে আপলোড হয়)
+// ══════════════════════════════
+let _menuLogoEdit = '';
+function renderMenuLogoSettings() {
+  _menuLogoEdit = APP_LOGO || '';
+  document.getElementById('settingsBody').innerHTML = `
+    <button class="settings-row" style="margin-bottom:12px;background:#F8FAFC" onclick="renderSettingsMain()">
+      <div class="settings-icon-box" style="background:#EEF2FF">←</div>
+      <div class="settings-lbl">সেটিংসে ফিরুন</div>
+    </button>
+    <div class="sec-lbl">মেনু ড্রয়ারের লোগো</div>
+    <div style="background:#fff;border:1.5px solid var(--border);border-radius:14px;padding:16px">
+      <div style="font-size:12.5px;color:var(--sub);margin-bottom:12px">মেনু (☰) বাটনে চাপ দিলে যে ড্রয়ার খোলে, তার উপরের ছোট লোগোটি এখান থেকে পরিবর্তন করুন।</div>
+      <div class="f-group" style="margin-bottom:12px">
+        <label class="f-lbl">লোগো ছবি</label>
+        <input type="file" accept="image/*" id="menuLogoFile" style="width:100%;padding:8px;border:1.5px solid var(--border);border-radius:10px;font-size:13px" onchange="previewMenuLogo(this)">
+        <div id="menuLogoPreviewWrap" style="margin-top:8px">
+          ${_menuLogoEdit?`<img id="menuLogoPreview" src="${_menuLogoEdit}" style="width:56px;height:56px;border-radius:12px;object-fit:cover;border:2px solid var(--border)">`:`<div id="menuLogoPreview" style="font-size:12px;color:var(--sub)">এখনো কোনো লোগো সেট করা হয়নি — 🏫 আইকন দেখানো হচ্ছে</div>`}
+        </div>
+      </div>
+      <button class="btn-primary" style="width:100%" onclick="doSaveMenuLogo()">✓ সংরক্ষণ করুন</button>
+    </div>
+  `;
+}
+function previewMenuLogo(input) {
+  const file = input.files && input.files[0];
+  if (!file) return;
+  const wrap = document.getElementById('menuLogoPreviewWrap');
+  if (wrap) wrap.innerHTML = `<div style="font-size:12px;color:var(--sub)">⏳ ছবি আপলোড হচ্ছে...</div>`;
+  uploadImageToImgbb(file).then(url => {
+    _menuLogoEdit = url;
+    if (wrap) wrap.innerHTML = `<img id="menuLogoPreview" src="${url}" style="width:56px;height:56px;border-radius:12px;object-fit:cover;border:2px solid var(--border)">`;
+  }).catch(err => {
+    alert('❌ ছবি আপলোড ব্যর্থ হয়েছে: ' + err.message);
+    input.value = '';
+  });
+}
+function doSaveMenuLogo() {
+  db.collection("settings").doc("app").set({ menuLogo: _menuLogoEdit }, {merge:true})
+    .then(()=>{
+      APP_LOGO = _menuLogoEdit;
+      applyDrawerLogo();
+      alert('✅ লোগো পরিবর্তন হয়েছে!');
+    })
+    .catch(e=>alert('❌ সংরক্ষণ ব্যর্থ: '+e.message));
+}
+
+// ══════════════════════════════
 // ডেভেলপার তথ্য এডিট (Developer Settings-এর ভেতরে)
 // ══════════════════════════════
 let _devEditPhoto = '';
@@ -9265,42 +9340,16 @@ function removeDevField(i) {
 function previewDevPhoto(input) {
   const file = input.files && input.files[0];
   if (!file) return;
-  if (!file.type.startsWith('image/')) { alert('❌ শুধুমাত্র ছবি ফাইল নির্বাচন করুন!'); input.value=''; return; }
-  const reader = new FileReader();
-  reader.onload = function(e) {
-    const img = new Image();
-    img.onload = function() {
-      const TARGET_BYTES = 150 * 1024, MAX_BYTES = 200 * 1024;
-      let maxDim = 500, w = img.width, h = img.height;
-      if (w > h && w > maxDim) { h = Math.round(h * maxDim / w); w = maxDim; }
-      else if (h >= w && h > maxDim) { w = Math.round(w * maxDim / h); h = maxDim; }
-      const canvas = document.createElement('canvas');
-      canvas.width = w; canvas.height = h;
-      const ctx = canvas.getContext('2d');
-      ctx.drawImage(img, 0, 0, w, h);
-      let quality = 0.9;
-      let dataUrl = canvas.toDataURL('image/jpeg', quality);
-      const sizeOf = url => Math.round(url.length * 0.75);
-      let tries = 0;
-      while (sizeOf(dataUrl) > TARGET_BYTES && quality > 0.3 && tries < 10) {
-        quality -= 0.08;
-        dataUrl = canvas.toDataURL('image/jpeg', quality);
-        tries++;
-      }
-      if (sizeOf(dataUrl) > MAX_BYTES) {
-        alert('❌ ছবিটি প্রসেস করার পরও অনেক বড় হচ্ছে, অন্য একটি ছবি চেষ্টা করুন।');
-        input.value = '';
-        return;
-      }
-      _devEditPhoto = dataUrl;
-      const wrap = document.getElementById('devPhotoPreviewWrap');
-      wrap.innerHTML = `<img id="devPhotoPreview" src="${dataUrl}" style="width:64px;height:64px;border-radius:50%;object-fit:cover;border:2px solid var(--border)">`;
-    };
-    img.onerror = function(){ alert('❌ ছবিটি লোড করা যায়নি!'); input.value=''; };
-    img.src = e.target.result;
-  };
-  reader.onerror = function(){ alert('❌ ছবি পড়তে সমস্যা হয়েছে!'); input.value=''; };
-  reader.readAsDataURL(file);
+  const wrap = document.getElementById('devPhotoPreviewWrap');
+  if (wrap) wrap.innerHTML = `<div style="font-size:12px;color:var(--sub)">⏳ ছবি আপলোড হচ্ছে...</div>`;
+  uploadImageToImgbb(file).then(url => {
+    _devEditPhoto = url;
+    if (wrap) wrap.innerHTML = `<img id="devPhotoPreview" src="${url}" style="width:64px;height:64px;border-radius:50%;object-fit:cover;border:2px solid var(--border)">`;
+  }).catch(err => {
+    alert('❌ ছবি আপলোড ব্যর্থ হয়েছে: ' + err.message);
+    input.value = '';
+    if (wrap) wrap.innerHTML = _devEditPhoto ? `<img id="devPhotoPreview" src="${_devEditPhoto}" style="width:64px;height:64px;border-radius:50%;object-fit:cover;border:2px solid var(--border)">` : `<div id="devPhotoPreview"></div>`;
+  });
 }
 function doSaveDevInfo() {
   const name = document.getElementById('devNameInput').value.trim();
@@ -9684,15 +9733,14 @@ function doSelfPwChange() {
     .catch(e=>alert('❌ সংরক্ষণ ব্যর্থ: '+e.message));
 }
 let forgotPwRequestType = 'পাসওয়ার্ড রিসেট';
+let forgotPwCurrentValue = '';
+let forgotPwExtraLabel = '';
 function forgotSchoolPw() {
   document.getElementById('selfPwModal').classList.remove('active');
   let school = null;
   data.clusters.forEach(c=>c.schools.forEach(s=>{ if(s.id===selfPwSchoolId) school=s }));
-  forgotPwRequestType = 'বিদ্যালয়ের পাসওয়ার্ড';
-  document.getElementById('forgotPwModal').classList.add('active');
-  document.getElementById('forgotName').value='';
-  document.getElementById('forgotMsg').value = school ? ('স্কুল: '+school.name+' (পাসওয়ার্ড নং: '+school.num+')') : '';
-  document.getElementById('forgotError').textContent='';
+  if(!school) return;
+  openForgotPwModal('বিদ্যালয়ের পাসওয়ার্ড', school.password, school.name+' — পাসওয়ার্ড নং: '+school.num);
 }
 // ══ উপজেলা শিক্ষা অফিসের নিজস্ব পাসওয়ার্ড পরিবর্তন (UEO পেজের গিয়ার আইকন থেকে) ══
 function openOfficeSelfPwModal() {
@@ -9720,44 +9768,29 @@ function doOfficeSelfPwChange() {
 }
 function forgotOfficeSelfPw() {
   document.getElementById('officeSelfPwModal').classList.remove('active');
-  forgotPwRequestType = 'উপজেলা অফিসের পাসওয়ার্ড';
-  document.getElementById('forgotPwModal').classList.add('active');
-  document.getElementById('forgotName').value='';
-  document.getElementById('forgotEmail').value='';
-  document.getElementById('forgotMsg').value='উপজেলা শিক্ষা অফিসের পাসওয়ার্ড রিসেট প্রয়োজন';
-  document.getElementById('forgotError').textContent='';
+  openForgotPwModal('উপজেলা শিক্ষা অফিসের পাসওয়ার্ড', OFFICE_PASSWORD, '');
 }
 function forgotMasterPw() {
   document.getElementById('masterPwModal').classList.remove('active');
-  forgotPwRequestType = 'মাস্টার পাসওয়ার্ড';
-  document.getElementById('forgotPwModal').classList.add('active');
-  document.getElementById('forgotName').value = '';
-  document.getElementById('forgotEmail').value = '';
-  document.getElementById('forgotMsg').value = '';
-  document.getElementById('forgotError').textContent = '';
+  openForgotPwModal('মাস্টার পাসওয়ার্ড', MASTER_PASSWORD, '');
 }
 function submitForgotPw() {
-  const name = document.getElementById('forgotName').value.trim();
-  const email = document.getElementById('forgotEmail').value.trim();
-  const msg = document.getElementById('forgotMsg').value.trim();
-  if(!name) { document.getElementById('forgotError').textContent = 'নাম লিখুন!'; return; }
-  const btn = document.querySelector('#forgotPwModal .dir-btn-primary');
+  const btn = document.getElementById('forgotPwSendBtn');
   if(btn){ btn.disabled = true; btn.textContent = 'পাঠানো হচ্ছে...'; }
   sendEmailNotification(EMAILJS_TPL_PW_REQUEST, {
     to_email: ADMIN_EMAIL,
-    from_name: name,
-    from_email: email || 'দেওয়া হয়নি',
-    email: email || ADMIN_EMAIL,
+    email: ADMIN_EMAIL,
     request_type: forgotPwRequestType,
-    message: msg || 'পাসওয়ার্ড ভুলে গেছি',
+    extra_label: forgotPwExtraLabel,
+    current_password: forgotPwCurrentValue,
     sent_time: new Date().toLocaleString('bn-BD')
   }).then(()=>{
     document.getElementById('forgotPwModal').classList.remove('active');
-    alert('✅ অনুরোধ পাঠানো হয়েছে! Developer শীঘ্রই যোগাযোগ করবেন।');
+    alert('✅ বর্তমান পাসওয়ার্ড ইমেইলে পাঠানো হয়েছে!');
   }).catch(()=>{
-    alert('❌ পাঠাতে সমস্যা হয়েছে, একটু পরে আবার চেষ্টা করুন।');
+    document.getElementById('forgotError').textContent = '❌ পাঠাতে সমস্যা হয়েছে, একটু পরে আবার চেষ্টা করুন।';
   }).finally(()=>{
-    if(btn){ btn.disabled = false; btn.textContent = '📧 পাঠান'; }
+    if(btn){ btn.disabled = false; btn.textContent = '📧 ইমেইলে পাঠান'; }
   });
 }
 
@@ -10036,7 +10069,18 @@ function saveSchoolInfo() {
   loadNoticesFromFirebase();
   renderNoticeBoard();
   renderClusters(); // ডেটা লোড হওয়ার আগে খালি অবস্থায় দেখাবে, Firestore থেকে ডেটা এলেই refreshCurrentView() আপডেট করে দেবে
+  applyDrawerLogo(); // Firestore থেকে menuLogo আসার আগ পর্যন্ত ফলব্যাক আইকন দেখাবে
 })();
+
+// ══════════════════════════════
+// PWA: সার্ভিস ওয়ার্কার রেজিস্ট্রেশন — এটা থাকলেই অ্যান্ড্রয়েড ক্রোম নিজে থেকে
+// "ইনস্টল করুন" প্রম্পট দেখাবে এবং অ্যাপটি ওয়েবভিউ হিসেবে হোম স্ক্রিনে যোগ করা যাবে
+// ══════════════════════════════
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js').catch(err => console.error('SW রেজিস্ট্রেশন ব্যর্থ:', err));
+  });
+}
 </script>
 </body>
 </html>
