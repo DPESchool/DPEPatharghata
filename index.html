@@ -66,6 +66,17 @@ body{font-family:'Hind Siliguri',sans-serif;background:var(--bg);color:var(--tex
 .notice-empty{font-size:13px;color:var(--light);text-align:center;padding:6px 0;font-style:italic}
 .notice-attach-btn{display:inline-flex;align-items:center;gap:6px;padding:7px 13px;border-radius:10px;background:#EFF6FF;border:1.5px solid #BFDBFE;color:#1D4ED8;font-size:12px;font-weight:700;text-decoration:none;margin-bottom:9px}
 .notice-attach-btn:hover{background:#DBEAFE}
+.file-card{background:var(--bg);border:1.5px solid var(--border);border-radius:var(--rs);padding:12px 14px;margin-bottom:10px;display:flex;gap:12px;align-items:flex-start}
+.file-card-icon{font-size:28px;flex-shrink:0}
+.file-card-info{flex:1;min-width:0}
+.file-card-title{font-size:14px;font-weight:700;color:var(--text);margin-bottom:3px;word-break:break-word}
+.file-card-note{font-size:12.5px;color:var(--sub);margin-bottom:6px;line-height:1.5}
+.file-card-date{font-size:10.5px;color:var(--light);margin-bottom:4px}
+.file-card-stats{font-size:11px;color:var(--sub);margin-bottom:8px}
+.file-card-actions{display:flex;gap:8px;flex-wrap:wrap}
+.file-card-actions a, .file-card-actions button{flex:1;text-align:center;padding:7px 10px;border-radius:9px;font-size:12.5px;font-weight:700;cursor:pointer;text-decoration:none;white-space:nowrap}
+.file-btn-view{background:#EFF6FF;border:1.5px solid #BFDBFE;color:#1D4ED8}
+.file-btn-download{background:linear-gradient(135deg,var(--primary),var(--pl));border:none;color:#fff}
 .notice-manage-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--rs);margin-bottom:8px;background:var(--bg)}
 .notice-manage-info{flex:1;min-width:0}
 .notice-manage-title{font-size:13px;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -423,6 +434,11 @@ body{font-family:'Hind Siliguri',sans-serif;background:var(--bg);color:var(--tex
       <div><div class="d-label">অফিস স্টাফ</div><div class="d-desc">কর্মকর্তা-কর্মচারী তালিকা</div></div>
       <div class="d-arrow">›</div>
     </button>
+    <button class="drawer-item" onclick="openMP('files')">
+      <div class="d-icon" style="background:#FEF3C7">📁</div>
+      <div><div class="d-label">ফাইল ম্যানেজমেন্ট</div><div class="d-desc">অফিশিয়াল PDF ও Word ফাইল</div></div>
+      <div class="d-arrow">›</div>
+    </button>
     <div class="drawer-div"></div>
     <button class="drawer-item" onclick="closeDrawer();openDevPage()">
       <div class="d-icon" style="background:#EEF2FF">👨‍💻</div>
@@ -439,8 +455,8 @@ body{font-family:'Hind Siliguri',sans-serif;background:var(--bg);color:var(--tex
   <div class="mp-hdr"><button class="mp-back" onclick="closeMP('office')">← Back</button><div class="mp-title">শিক্ষা অফিস পরিচিতি</div></div>
   <div class="mp-body">
     <div class="office-img-ph" id="officeImgPh">
-      <img src="upazilla.jpg" alt="উপজেলা" style="width:100%;height:100%;object-fit:cover;border-radius:var(--r)" onerror="this.remove();document.getElementById('officeImgPhFallback').style.display='flex'">
-      <div id="officeImgPhFallback" style="display:none;width:100%;height:100%;align-items:center;justify-content:center;font-size:60px">🏫</div>
+      <img id="officeArticleImg" src="" alt="উপজেলা" style="width:100%;height:100%;object-fit:cover;border-radius:var(--r);display:none">
+      <div id="officeImgPhFallback" style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:60px">🏫</div>
     </div>
     <div class="office-article" id="officeArticleText"></div>
   </div>
@@ -474,6 +490,16 @@ body{font-family:'Hind Siliguri',sans-serif;background:var(--bg);color:var(--tex
   <button onclick="openOfficeSelfPwModal()" style="background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.2);border-radius:10px;width:34px;height:34px;color:#fff;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;justify-self:end">⚙️</button>
 </div>
   <div class="mp-body" id="staffBody"></div>
+</div>
+
+<!-- MENU PAGE: FILES -->
+<div class="menu-page" id="mp-files">
+  <div class="mp-hdr" style="display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:10px">
+  <button class="mp-back" onclick="closeMP('files')">← Back</button>
+  <div class="mp-title" style="text-align:center">ফাইল ম্যানেজমেন্ট</div>
+  <button onclick="requireOfficePw(openFileUploadModal)" style="background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.2);border-radius:10px;width:34px;height:34px;color:#fff;font-size:18px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;justify-self:end">+</button>
+</div>
+  <div class="mp-body" id="filesBody"></div>
 </div>
 
 
@@ -746,6 +772,27 @@ body{font-family:'Hind Siliguri',sans-serif;background:var(--bg);color:var(--tex
 <!-- OFFICER EDIT MODAL -->
 <div class="dir-modal-overlay" id="officerEditModal"><div class="dir-modal-box"></div></div>
 
+<!-- FILE UPLOAD MODAL -->
+<div class="dir-modal-overlay" id="fileUploadModal">
+  <div class="dir-modal-box">
+    <div style="max-height:80vh;overflow-y:auto">
+      <div class="dir-modal-title">📁 নতুন ফাইল যোগ করুন</div>
+      <div class="dir-modal-sub" style="text-align:left">PDF অথবা Word (DOC/DOCX) ফাইল আপলোড করুন</div>
+      <div class="f-group" style="margin-bottom:10px;text-align:left"><label class="f-lbl">টাইটেল</label><input class="f-input" id="fu_title" placeholder="যেমন: মে মাসের সার্কুলার"></div>
+      <div class="f-group" style="margin-bottom:10px;text-align:left"><label class="f-lbl">অতিরিক্ত তথ্য (ঐচ্ছিক)</label><textarea class="f-input" id="fu_note" rows="2" style="resize:vertical" placeholder="ফাইল সম্পর্কে সংক্ষিপ্ত তথ্য"></textarea></div>
+      <div class="f-group" style="margin-bottom:6px;text-align:left">
+        <label class="f-lbl">ফাইল নির্বাচন করুন</label>
+        <input type="file" accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document" id="fu_file" style="width:100%;padding:8px;border:1.5px solid var(--border);border-radius:10px;font-size:13px">
+        <div id="fu_status" style="font-size:12px;color:var(--sub);margin-top:6px"></div>
+      </div>
+      <div class="modal-actions" style="margin-top:14px;display:flex;gap:8px">
+        <button class="btn-sec" onclick="closeFileUploadModal()">বাতিল</button>
+        <button class="btn-primary" id="fu_submit_btn" onclick="doUploadFile()">⬆️ আপলোড</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- OFFICE PASSWORD AUTH MODAL -->
 <div class="dir-modal-overlay" id="officePwAuthModal">
   <div class="dir-modal-box">
@@ -773,6 +820,12 @@ body{font-family:'Hind Siliguri',sans-serif;background:var(--bg);color:var(--tex
       <button class="m-tab" onclick="switchTab('email')">📧 ইমেইলে পাঠান</button>
     </div>
     <div class="m-form show" id="pwForm">
+      <div class="f-group" style="margin-bottom:10px">
+        <label class="f-lbl">ছবি (ঐচ্ছিক)</label>
+        <input type="file" accept="image/*" id="pw_photo_file" style="width:100%;padding:8px;border:1.5px solid var(--border);border-radius:10px;font-size:13px" onchange="previewTeacherPhoto(this)">
+        <div id="pw_photo_preview_wrap" style="margin-top:8px"></div>
+        <input type="hidden" id="pw_photo" value="">
+      </div>
       <div class="f-group"><label class="f-lbl">নাম</label><input class="f-input" id="pw_name" placeholder="শিক্ষকের নাম"></div>
       <div class="f-group"><label class="f-lbl">পদবী</label>
         <select class="f-input" id="pw_desig"></select>
@@ -825,6 +878,11 @@ body{font-family:'Hind Siliguri',sans-serif;background:var(--bg);color:var(--tex
       <div class="f-group"><label class="f-lbl">মূল নোটিশ</label><textarea class="f-input" id="noticeEditBody" rows="5" style="resize:vertical;font-family:'Hind Siliguri',sans-serif" placeholder="নোটিশের বিস্তারিত লিখুন..."></textarea></div>
       <div class="f-group"><label class="f-lbl">📎 ফাইলের শিরোনাম (ঐচ্ছিক)</label><input class="f-input" id="noticeEditAttachTitle" placeholder="যেমন: মে মাসের রুটিন.pdf"></div>
       <div class="f-group"><label class="f-lbl">🔗 Google Drive লিংক (ঐচ্ছিক)</label><input class="f-input" id="noticeEditAttachUrl" type="url" placeholder="Google Drive শেয়ার লিংক পেস্ট করুন"></div>
+      <div class="f-group">
+        <label class="f-lbl">🖼️ ছবি সংযুক্ত করুন (একাধিক, ঐচ্ছিক)</label>
+        <input type="file" accept="image/*" multiple id="noticeImgFile" style="width:100%;padding:8px;border:1.5px solid var(--border);border-radius:10px;font-size:13px" onchange="addNoticeImages(this)">
+        <div id="noticeImgPreviewWrap" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:8px"></div>
+      </div>
       <div class="m-actions">
         <button class="btn-sec" onclick="closeNoticeEditModal()">← ফিরুন</button>
         <button class="btn-primary" onclick="saveNoticeEdit()">✓ সংরক্ষণ করুন</button>
@@ -8012,6 +8070,22 @@ function ensureAnonymousAuth() {
 let UPAZILA_SUBTITLE = 'পাথরঘাটা, বরগুনা';
 // মেনু ড্রয়ারের উপরের ছোট লোগো — Developer সেকশন থেকে পরিবর্তনযোগ্য (imgbb URL, Firestore-এ সংরক্ষিত)
 let APP_LOGO = '';
+// শিক্ষা অফিস পরিচিতি পেজের উপরের ছবি — Developer সেটিংস থেকে পরিবর্তনযোগ্য (imgbb URL, Firestore-এ সংরক্ষিত)
+let OFFICE_ARTICLE_IMAGE = '';
+function applyOfficeArticleImage() {
+  const img = document.getElementById('officeArticleImg');
+  const fallback = document.getElementById('officeImgPhFallback');
+  if (!img || !fallback) return;
+  if (OFFICE_ARTICLE_IMAGE) {
+    img.src = OFFICE_ARTICLE_IMAGE;
+    img.style.display = 'block';
+    fallback.style.display = 'none';
+    img.onerror = () => { img.style.display='none'; fallback.style.display='flex'; };
+  } else {
+    img.style.display = 'none';
+    fallback.style.display = 'flex';
+  }
+}
 function applyDrawerLogo() {
   const img = document.getElementById('drawerLogoImg');
   const fallback = document.getElementById('drawerLogoFallback');
@@ -8115,6 +8189,7 @@ function loadAppSettings() {
     if (d.devInfo) devInfo = d.devInfo;
     if (d.officeArticle) OFFICE_ARTICLE = d.officeArticle;
     if (typeof d.menuLogo === 'string') { APP_LOGO = d.menuLogo; applyDrawerLogo(); }
+    if (typeof d.officeImage === 'string') { OFFICE_ARTICLE_IMAGE = d.officeImage; applyOfficeArticleImage(); }
     if (document.getElementById('mp-office')?.classList.contains('open')) renderOfficeArticle();
     refreshCurrentView();
   });
@@ -8207,22 +8282,22 @@ window.addEventListener('popstate', function(e) {
   // এটা masterPwModal, forgotPwModal, changeMasterPwModal, changeSchoolPwModal, selfPwModal, officeSelfPwModal,
   // teacherCountModal, clusterChangeModal, infoPwModal, addTchPwModal, officerEditModal, officePwAuthModal — সবগুলোর জন্যই কাজ করে
   const openDirModal = document.querySelector('.dir-modal-overlay.active');
-  if(openDirModal){ openDirModal.classList.remove('active'); history.pushState({},'',''); return; }
-  if(document.getElementById('infoEditPage').classList.contains('open')){ closeInfoEditPage(); history.pushState({},'',''); return; }
-  if(document.getElementById('infoPageFull').classList.contains('open')){ closeInfoPage(); history.pushState({},'',''); return; }
-  if(document.getElementById('settingsPageFull').classList.contains('open')){ closeSettingsPageFull(); history.pushState({},'',''); return; }
-  if(document.getElementById('devPageFull').classList.contains('open')){ closeDevPage(); history.pushState({},'',''); return; }
+  if(openDirModal){ openDirModal.classList.remove('active'); return; }
+  if(document.getElementById('infoEditPage').classList.contains('open')){ closeInfoEditPage(); return; }
+  if(document.getElementById('infoPageFull').classList.contains('open')){ closeInfoPage(); return; }
+  if(document.getElementById('settingsPageFull').classList.contains('open')){ closeSettingsPageFull(); return; }
+  if(document.getElementById('devPageFull').classList.contains('open')){ closeDevPage(); return; }
   // মেনু পেজ খোলা থাকলে আগে সেটা বন্ধ করো
   const openMP = document.querySelector('.menu-page.open');
-  if(openMP){ openMP.classList.remove('open'); history.pushState({}, '',''); return; }
+  if(openMP){ openMP.classList.remove('open'); return; }
   // drawer খোলা থাকলে বন্ধ করো
-  if(document.getElementById('drawer').classList.contains('open')){ closeDrawer(); history.pushState({}, '',''); return; }
+  if(document.getElementById('drawer').classList.contains('open')){ closeDrawer(); return; }
   // modal খোলা থাকলে বন্ধ করো
-  if(!document.getElementById('noticeEditModal').classList.contains('hidden')){ closeNoticeEditModal(); history.pushState({}, '',''); return; }
-  if(!document.getElementById('noticeManageModal').classList.contains('hidden')){ closeNoticeManageModal(); history.pushState({}, '',''); return; }
-  if(!document.getElementById('editModal').classList.contains('hidden')){ closeModal(); history.pushState({}, '',''); return; }
+  if(!document.getElementById('noticeEditModal').classList.contains('hidden')){ closeNoticeEditModal(); return; }
+  if(!document.getElementById('noticeManageModal').classList.contains('hidden')){ closeNoticeManageModal(); return; }
+  if(!document.getElementById('editModal').classList.contains('hidden')){ closeModal(); return; }
   // app navigation এ back যাও
-  if(navStack.length > 1){ goBack(); history.pushState({}, '',''); }
+  if(navStack.length > 1){ goBack(); }
 });
 
 // ══════════════════════════════
@@ -8317,13 +8392,16 @@ function teacherCard(t,school,cluster) {
   if(t.vacant) return `<div class="vacant-card"><span style="font-size:24px">💺</span><span>${t.designation} — পদটি শূন্য</span></div>`;
   const av = t.gender==='female'?'👩':'👨';
   const avc = t.gender==='female'?'f':'m';
+  const avatarHtml = t.photo
+    ? `<img class="t-avatar ${avc}" src="${t.photo}" style="object-fit:cover">`
+    : `<div class="t-avatar ${avc}">${av}</div>`;
   const _isHead = isHeadTeacher(t.designation);
   const _isActing = isActingHead(t.designation);
   const cardClass = _isHead ? ' head' : _isActing ? ' acting' : '';
   const serialBadge = t.serial ? `<span style="background:var(--surface2);color:var(--sub);font-size:10px;font-weight:700;padding:1px 6px;border-radius:6px;font-family:'Inter',sans-serif">#${t.serial}</span>` : '';
   return `<div class="teacher-card${cardClass}">
     <div style="display:flex;align-items:center;gap:12px">
-      <div class="t-avatar ${avc}">${av}</div>
+      ${avatarHtml}
       <div class="t-info" style="flex:1;min-width:0">
         <div class="t-name">${t.name} ${serialBadge}</div>
         <div class="t-desig">${t.designation}</div>
@@ -8352,7 +8430,7 @@ function showAddTeacherForm(schoolId) {
   addingTeacherForSchool = schoolId;
   document.getElementById('addTchPwInput').value='';
   document.getElementById('addTchPwError').textContent='';
-  document.getElementById('addTchPwModal').classList.add('active');
+  document.getElementById('addTchPwModal').classList.add('active'); pushState('modal');
 }
 function confirmAddTeacherPw() {
   const pw = document.getElementById('addTchPwInput').value.trim();
@@ -8368,6 +8446,12 @@ function confirmAddTeacherPw() {
   const formHtml = `
     <div class="add-teacher-form" id="addTeacherForm">
       <div class="add-teacher-form-title">➕ নতুন শিক্ষক যোগ করুন</div>
+      <div class="f-group" style="margin-bottom:10px">
+        <label class="f-lbl">ছবি (ঐচ্ছিক)</label>
+        <input type="file" accept="image/*" id="at_photo_file" style="width:100%;padding:8px;border:1.5px solid var(--border);border-radius:10px;font-size:13px" onchange="previewNewTeacherPhoto(this)">
+        <div id="at_photo_preview_wrap" style="margin-top:8px"></div>
+        <input type="hidden" id="at_photo" value="">
+      </div>
       <div class="f-group" style="margin-bottom:10px"><label class="f-lbl">নাম</label><input class="f-input" id="at_name" placeholder="শিক্ষকের নাম"></div>
       <div class="f-group" style="margin-bottom:10px"><label class="f-lbl">পদবী</label><select class="f-input" id="at_desig">${DESIGNATIONS.map(d=>`<option value="${d}">${d}</option>`).join('')}</select></div>
       <div class="f-group" style="margin-bottom:10px"><label class="f-lbl">সিরিয়াল</label><input class="f-input" type="number" id="at_serial" placeholder="১, ২, ৩..."></div>
@@ -8392,6 +8476,21 @@ function cancelAddTeacher() {
   const f = document.getElementById('addTeacherForm');
   if(f) f.remove();
 }
+function previewNewTeacherPhoto(input) {
+  const file = input.files && input.files[0];
+  if (!file) return;
+  const wrap = document.getElementById('at_photo_preview_wrap');
+  if (wrap) wrap.innerHTML = `<div style="font-size:12px;color:var(--sub)">⏳ ছবি আপলোড হচ্ছে...</div>`;
+  uploadImageToImgbb(file).then(url => {
+    const f = document.getElementById('at_photo');
+    if (f) f.value = url;
+    if (wrap) wrap.innerHTML = `<img src="${url}" style="width:60px;height:60px;border-radius:50%;object-fit:cover;border:2px solid var(--border)">`;
+  }).catch(err => {
+    alert('❌ ছবি আপলোড ব্যর্থ হয়েছে: ' + err.message);
+    input.value = '';
+    if (wrap) wrap.innerHTML = '';
+  });
+}
 
 function doAddTeacher(schoolId) {
   const name = document.getElementById('at_name').value.trim();
@@ -8405,6 +8504,7 @@ function doAddTeacher(schoolId) {
     phone: document.getElementById('at_phone').value.trim(),
     blood: document.getElementById('at_blood').value.trim(),
     gender: document.getElementById('at_gender').value,
+    photo: document.getElementById('at_photo').value,
     vacant: false
   };
   let school = null;
@@ -8468,8 +8568,11 @@ function doSearch(q) {
   found.forEach(({t,s}) => {
     const av=t.gender==='female'?'👩':'👨';
     const avc=t.gender==='female'?'f':'m';
+    const avatarHtmlSearch = t.photo
+      ? `<img class="t-avatar ${avc}" src="${t.photo}" style="object-fit:cover">`
+      : `<div class="t-avatar ${avc}">${av}</div>`;
     html+=`<div class="teacher-card" style="margin-bottom:10px">
-      <div class="t-avatar ${avc}">${av}</div>
+      ${avatarHtmlSearch}
       <div class="t-info">
         <div class="t-name">${t.name}</div>
         <div class="t-desig">${t.designation}</div>
@@ -8485,7 +8588,7 @@ function doSearch(q) {
 // ══════════════════════════════
 // DRAWER
 // ══════════════════════════════
-function openDrawer(){ document.getElementById('drawer').classList.add('open'); document.getElementById('drawerOverlay').classList.add('open'); }
+function openDrawer(){ document.getElementById('drawer').classList.add('open'); document.getElementById('drawerOverlay').classList.add('open'); pushState('drawer'); }
 function closeDrawer(){ document.getElementById('drawer').classList.remove('open'); document.getElementById('drawerOverlay').classList.remove('open'); }
 function openMP(id){
   closeDrawer();
@@ -8493,6 +8596,7 @@ function openMP(id){
   if(id==='ueo') renderUEO();
   if(id==='aueo') renderAUEO();
   if(id==='staff') renderStaff();
+  if(id==='files') renderFilesList();
   pushState('mp-'+id);
   setTimeout(()=>document.getElementById('mp-'+id).classList.add('open'),60);
 }
@@ -8567,7 +8671,7 @@ function openOfficerEditModal(type, id) {
     ${emailRow}${clRow}${bioRow}
     <div class="modal-actions" style="margin-top:12px"><button class="btn-sec" onclick="closeOfficerModal()">বাতিল</button><button class="btn-primary" onclick="saveOfficer()">✓ সংরক্ষণ</button></div>
   </div>`;
-  document.getElementById('officerEditModal').classList.add('active');
+  document.getElementById('officerEditModal').classList.add('active'); pushState('modal');
 }
 function closeOfficerModal(){document.getElementById('officerEditModal').classList.remove('active');}
 function saveOfficer(){
@@ -8717,7 +8821,7 @@ function requireOfficePw(action) {
   offPendingAction = action;
   document.getElementById('officePwInput').value='';
   document.getElementById('officePwInputError').textContent='';
-  document.getElementById('officePwAuthModal').classList.add('active');
+  document.getElementById('officePwAuthModal').classList.add('active'); pushState('modal');
   setTimeout(()=>document.getElementById('officePwInput').focus(),100);
 }
 function confirmOfficePw(){
@@ -8736,7 +8840,7 @@ function openForgotPwModal(type, currentValue, extraLabel) {
   forgotPwExtraLabel = extraLabel || '';
   document.getElementById('forgotPwSub').textContent = `"${type}"${extraLabel ? ' ('+extraLabel+')' : ''} — বর্তমান পাসওয়ার্ডটি ${ADMIN_EMAIL} এ ইমেইল করা হবে`;
   document.getElementById('forgotError').textContent = '';
-  document.getElementById('forgotPwModal').classList.add('active');
+  document.getElementById('forgotPwModal').classList.add('active'); pushState('modal');
 }
 function forgotOfficePw(){
   document.getElementById('officePwAuthModal').classList.remove('active');
@@ -8770,13 +8874,32 @@ function openModal(tid, sid, cid) {
   document.getElementById('pw_serial').value = t.serial || '';
   document.getElementById('em_serial').value = t.serial || '';
   document.getElementById('pw_pass').value='';
-  document.getElementById('editModal').classList.remove('hidden');
+  document.getElementById('pw_photo').value = t.photo || '';
+  document.getElementById('pw_photo_preview_wrap').innerHTML = t.photo
+    ? `<img src="${t.photo}" style="width:60px;height:60px;border-radius:50%;object-fit:cover;border:2px solid var(--border)">`
+    : '';
+  document.getElementById('editModal').classList.remove('hidden'); pushState('modal');
 }
 function closeModal(){ document.getElementById('editModal').classList.add('hidden'); }
 function switchTab(t){
   document.querySelectorAll('.m-tab').forEach((b,i)=>b.classList.toggle('active',(i===0&&t==='pw')||(i===1&&t==='email')));
   document.getElementById('pwForm').classList.toggle('show',t==='pw');
   document.getElementById('emailForm').classList.toggle('show',t==='email');
+}
+function previewTeacherPhoto(input) {
+  const file = input.files && input.files[0];
+  if (!file) return;
+  const wrap = document.getElementById('pw_photo_preview_wrap');
+  if (wrap) wrap.innerHTML = `<div style="font-size:12px;color:var(--sub)">⏳ ছবি আপলোড হচ্ছে...</div>`;
+  uploadImageToImgbb(file).then(url => {
+    const f = document.getElementById('pw_photo');
+    if (f) f.value = url;
+    if (wrap) wrap.innerHTML = `<img src="${url}" style="width:60px;height:60px;border-radius:50%;object-fit:cover;border:2px solid var(--border)">`;
+  }).catch(err => {
+    alert('❌ ছবি আপলোড ব্যর্থ হয়েছে: ' + err.message);
+    input.value = '';
+    if (wrap) wrap.innerHTML = '';
+  });
 }
 function submitPW(){
   const pw=document.getElementById('pw_pass').value;
@@ -8792,6 +8915,7 @@ function submitPW(){
       t.serial=parseInt(document.getElementById('pw_serial').value)||99;
       t.phone=document.getElementById('pw_phone').value;
       t.blood=document.getElementById('pw_blood').value;
+      t.photo=document.getElementById('pw_photo').value;
       t.vacant=false;
     }
   });
@@ -8903,8 +9027,42 @@ let OFFICE_PASSWORD = 'Office@2025';
 // ══════════════════════════════
 // নোটিশ বোর্ড সিস্টেম (Firestore: notices কালেকশন — একাধিক নোটিশ, যোগ/এডিট/ডিলিট/হোয়াটসঅ্যাপ শেয়ার)
 // ══════════════════════════════
-let notices = []; // {id, title, body, attachTitle, attachUrl, updatedAtStr, createdAtMs} — Firestore থেকে লাইভ সিঙ্ক হয়
+let notices = []; // {id, title, body, attachTitle, attachUrl, images, updatedAtStr, createdAtMs} — Firestore থেকে লাইভ সিঙ্ক হয়
 let _noticeEditingId = null; // null = নতুন নোটিশ তৈরি হচ্ছে, নাহলে এই id-এর নোটিশ এডিট হচ্ছে
+let _noticeEditImages = []; // বর্তমান নোটিশ ফর্মে সংযুক্ত ছবির imgbb URL-গুলো
+
+function renderNoticeImgPreviews() {
+  const wrap = document.getElementById('noticeImgPreviewWrap');
+  if (!wrap) return;
+  wrap.innerHTML = _noticeEditImages.map((url, i) => `
+    <div style="position:relative;width:64px;height:64px">
+      <img src="${url}" style="width:100%;height:100%;object-fit:cover;border-radius:8px;border:2px solid var(--border)">
+      <button onclick="removeNoticeImage(${i})" style="position:absolute;top:-6px;right:-6px;width:20px;height:20px;border-radius:50%;background:var(--red);color:#fff;border:none;font-size:12px;line-height:1;cursor:pointer">✕</button>
+    </div>
+  `).join('');
+}
+function addNoticeImages(input) {
+  const files = Array.from(input.files || []);
+  if (!files.length) return;
+  const wrap = document.getElementById('noticeImgPreviewWrap');
+  files.forEach(file => {
+    const placeholderId = 'nimg_ph_' + Date.now() + Math.random().toString(36).slice(2);
+    if (wrap) wrap.insertAdjacentHTML('beforeend', `<div id="${placeholderId}" style="width:64px;height:64px;border-radius:8px;border:2px dashed var(--border);display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--sub)">⏳</div>`);
+    uploadImageToImgbb(file).then(url => {
+      _noticeEditImages.push(url);
+      renderNoticeImgPreviews();
+    }).catch(err => {
+      alert('❌ ছবি আপলোড ব্যর্থ হয়েছে: ' + err.message);
+      const ph = document.getElementById(placeholderId);
+      if (ph) ph.remove();
+    });
+  });
+  input.value = '';
+}
+function removeNoticeImage(i) {
+  _noticeEditImages.splice(i, 1);
+  renderNoticeImgPreviews();
+}
 
 function escapeHtml(str) {
   if (str == null) return '';
@@ -8923,14 +9081,137 @@ function renderNoticeBoard() {
 }
 function renderNoticeCardHtml(n) {
   const attachHtml = n.attachUrl ? `<a href="${escapeHtml(n.attachUrl)}" target="_blank" rel="noopener" class="notice-attach-btn" onclick="event.stopPropagation()">📎 ${escapeHtml(n.attachTitle || 'সংযুক্ত ফাইল দেখুন')}</a>` : '';
+  const imagesHtml = (n.images && n.images.length) ? `<div style="display:flex;flex-wrap:wrap;gap:6px;margin:8px 0">${n.images.map(url => `<a href="${escapeHtml(url)}" target="_blank" rel="noopener" onclick="event.stopPropagation()"><img src="${escapeHtml(url)}" style="width:72px;height:72px;object-fit:cover;border-radius:8px;border:1px solid var(--border)"></a>`).join('')}</div>` : '';
   return `
     <div class="notice-card" onclick="this.classList.toggle('expanded')">
       <div class="notice-heading">📌 ${escapeHtml(n.title || 'শিরোনামহীন')}</div>
       ${n.body ? `<div class="notice-text">${escapeHtml(n.body)}</div>` : ''}
+      ${imagesHtml}
       ${attachHtml}
       <div class="notice-date">🕒 প্রকাশিত: ${escapeHtml(n.updatedAtStr || '')}</div>
     </div>
   `;
+}
+
+// ══════════════════════════════
+// ফাইল ম্যানেজমেন্ট — Cloudinary (Unsigned Upload) + Firestore
+// ══════════════════════════════
+const CLOUDINARY_CLOUD_NAME = "hhahasbg"; // পাথরঘাটা প্রজেক্টের Cloudinary Cloud Name
+const CLOUDINARY_UPLOAD_PRESET = "YOUR_UNSIGNED_UPLOAD_PRESET"; // ← এখনো বসানো বাকি: Settings→Upload→Add upload preset (Signing Mode: Unsigned) থেকে যে নাম দেবেন, সেটা এখানে বসান
+
+let files = []; // {id, title, note, url, fileName, timestamp, viewCount, downloadCount} — Firestore থেকে লাইভ সিঙ্ক হয়
+
+function loadFilesFromFirebase() {
+  db.collection("files").orderBy("timestamp", "desc").onSnapshot(snap => {
+    files = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    renderFilesList();
+  });
+}
+
+function renderFilesList() {
+  const body = document.getElementById('filesBody');
+  if (!body) return;
+  if (!files.length) {
+    body.innerHTML = `<div class="notice-empty">এখনো কোনো ফাইল যোগ করা হয়নি।</div>`;
+    return;
+  }
+  body.innerHTML = files.map(f => renderFileCardHtml(f)).join('');
+}
+
+function renderFileCardHtml(f) {
+  const dateStr = f.timestamp ? new Date(f.timestamp).toLocaleString('bn-BD', { dateStyle: 'medium', timeStyle: 'short' }) : '';
+  const ext = (f.fileName || '').split('.').pop().toUpperCase();
+  const icon = ext === 'PDF' ? '📕' : '📘';
+  return `
+    <div class="file-card">
+      <div class="file-card-icon">${icon}</div>
+      <div class="file-card-info">
+        <div class="file-card-title">${escapeHtml(f.title || 'শিরোনামহীন')}</div>
+        ${f.note ? `<div class="file-card-note">${escapeHtml(f.note)}</div>` : ''}
+        <div class="file-card-date">🕒 ${escapeHtml(dateStr)}</div>
+        <div class="file-card-stats">👁️ ${f.viewCount || 0} বার দেখা হয়েছে &nbsp;·&nbsp; ⬇️ ${f.downloadCount || 0} বার ডাউনলোড</div>
+        <div class="file-card-actions">
+          <button class="file-btn-view" onclick="viewFile('${f.id}')">👁️ দেখুন</button>
+          <button class="file-btn-download" onclick="downloadFile('${f.id}')">⬇️ ডাউনলোড</button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function viewFile(id) {
+  const f = files.find(x => x.id === id);
+  if (!f) return;
+  window.open(f.url, '_blank');
+  db.collection("files").doc(id).update({ viewCount: (f.viewCount || 0) + 1 }).catch(() => {});
+}
+
+function downloadFile(id) {
+  const f = files.find(x => x.id === id);
+  if (!f) return;
+  const a = document.createElement('a');
+  a.href = f.url;
+  a.download = f.fileName || f.title || 'file';
+  a.target = '_blank';
+  a.rel = 'noopener';
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  db.collection("files").doc(id).update({ downloadCount: (f.downloadCount || 0) + 1 }).catch(() => {});
+}
+
+function openFileUploadModal() {
+  document.getElementById('fu_title').value = '';
+  document.getElementById('fu_note').value = '';
+  document.getElementById('fu_file').value = '';
+  document.getElementById('fu_status').textContent = '';
+  document.getElementById('fileUploadModal').classList.add('active'); pushState('modal');
+}
+function closeFileUploadModal() {
+  document.getElementById('fileUploadModal').classList.remove('active');
+}
+function doUploadFile() {
+  const title = document.getElementById('fu_title').value.trim();
+  const note = document.getElementById('fu_note').value.trim();
+  const fileInput = document.getElementById('fu_file');
+  const file = fileInput.files && fileInput.files[0];
+  const statusEl = document.getElementById('fu_status');
+  if (!title) { alert('❌ টাইটেল দিন!'); return; }
+  if (!file) { alert('❌ একটি ফাইল নির্বাচন করুন!'); return; }
+  const allowedTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+  if (!allowedTypes.includes(file.type) && !/\.(pdf|doc|docx)$/i.test(file.name)) {
+    alert('❌ শুধুমাত্র PDF বা Word (DOC/DOCX) ফাইল আপলোড করা যাবে!');
+    return;
+  }
+  const submitBtn = document.getElementById('fu_submit_btn');
+  submitBtn.disabled = true;
+  statusEl.textContent = '⏳ আপলোড হচ্ছে... একটু অপেক্ষা করুন';
+  const form = new FormData();
+  form.append('file', file);
+  form.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+  fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/raw/upload`, { method: 'POST', body: form })
+    .then(r => r.json())
+    .then(json => {
+      if (!json.secure_url) throw new Error((json.error && json.error.message) || 'Cloudinary আপলোড ব্যর্থ হয়েছে');
+      return db.collection("files").add({
+        title, note,
+        url: json.secure_url,
+        fileName: file.name,
+        timestamp: Date.now(),
+        viewCount: 0,
+        downloadCount: 0
+      });
+    })
+    .then(() => {
+      closeFileUploadModal();
+    })
+    .catch(err => {
+      alert('❌ আপলোড ব্যর্থ হয়েছে: ' + err.message);
+    })
+    .finally(() => {
+      submitBtn.disabled = false;
+      statusEl.textContent = '';
+    });
 }
 
 function loadNoticesFromFirebase() {
@@ -8946,7 +9227,7 @@ function loadNoticesFromFirebase() {
 // ══ নোটিশ ব্যবস্থাপনা (তালিকা) মোডাল ══
 function openNoticeManageModal() {
   renderNoticeManageList();
-  document.getElementById('noticeManageModal').classList.remove('hidden');
+  document.getElementById('noticeManageModal').classList.remove('hidden'); pushState('modal');
 }
 function closeNoticeManageModal() {
   document.getElementById('noticeManageModal').classList.add('hidden');
@@ -8981,8 +9262,10 @@ function openNoticeFormModal(id) {
   document.getElementById('noticeEditBody').value = n ? n.body : '';
   document.getElementById('noticeEditAttachTitle').value = n ? (n.attachTitle || '') : '';
   document.getElementById('noticeEditAttachUrl').value = n ? (n.attachUrl || '') : '';
+  _noticeEditImages = n && Array.isArray(n.images) ? [...n.images] : [];
+  renderNoticeImgPreviews();
   document.getElementById('noticeManageModal').classList.add('hidden');
-  document.getElementById('noticeEditModal').classList.remove('hidden');
+  document.getElementById('noticeEditModal').classList.remove('hidden'); pushState('modal');
 }
 function closeNoticeEditModal() {
   document.getElementById('noticeEditModal').classList.add('hidden');
@@ -8996,7 +9279,7 @@ function readNoticeForm() {
   const attachUrl = document.getElementById('noticeEditAttachUrl').value.trim();
   if (!title && !body) { alert('❌ অন্তত শিরোনাম অথবা বার্তা লিখুন!'); return null; }
   if (attachUrl && !/^https?:\/\//i.test(attachUrl)) { alert('❌ লিংকটি সঠিক নয়! http:// বা https:// দিয়ে শুরু হতে হবে।'); return null; }
-  return { title, body, attachTitle, attachUrl };
+  return { title, body, attachTitle, attachUrl, images: [..._noticeEditImages] };
 }
 function upsertNoticeFirebase(f, updatedAtStr) {
   const payload = { ...f, updatedAtStr };
@@ -9208,13 +9491,22 @@ function doChangeAppSubtitle() {
 // শিক্ষা অফিস পরিচিতি — আর্টিকেল টেক্সট এডিট (উপজেলা সংক্রান্ত তথ্য পরিবর্তন)
 // ══════════════════════════════
 function renderOfficeArticleSettings() {
+  _officeArticleImgEdit = OFFICE_ARTICLE_IMAGE || '';
   document.getElementById('settingsBody').innerHTML = `
     <button class="settings-row" style="margin-bottom:12px;background:#F8FAFC" onclick="renderSettingsMain()">
       <div class="settings-icon-box" style="background:#EEF2FF">←</div>
       <div class="settings-lbl">সেটিংসে ফিরুন</div>
     </button>
-    <div class="sec-lbl">শিক্ষা অফিস পরিচিতি — লেখা</div>
+    <div class="sec-lbl">শিক্ষা অফিস পরিচিতি — ছবি ও লেখা</div>
     <div style="background:#fff;border:1.5px solid var(--border);border-radius:14px;padding:16px">
+      <div class="f-group" style="margin-bottom:16px">
+        <label class="f-lbl">উপরের ছবি</label>
+        <div style="font-size:12.5px;color:var(--sub);margin-bottom:8px">"শিক্ষা অফিস পরিচিতি" পেজের লেখার উপরে যে ছবিটি দেখা যায়, সেটি এখান থেকে পরিবর্তন করুন।</div>
+        <input type="file" accept="image/*" id="officeArticleImgFile" style="width:100%;padding:8px;border:1.5px solid var(--border);border-radius:10px;font-size:13px" onchange="previewOfficeArticleImg(this)">
+        <div id="officeArticleImgPreviewWrap" style="margin-top:8px">
+          ${_officeArticleImgEdit?`<img id="officeArticleImgPreview" src="${_officeArticleImgEdit}" style="width:100%;max-width:260px;height:120px;object-fit:cover;border-radius:10px;border:2px solid var(--border)">`:`<div id="officeArticleImgPreview" style="font-size:12px;color:var(--sub)">এখনো কোনো ছবি সেট করা হয়নি — 🏫 আইকন দেখানো হচ্ছে</div>`}
+        </div>
+      </div>
       <div style="font-size:12.5px;color:var(--sub);margin-bottom:12px">"শিক্ষা অফিস পরিচিতি" পেজে যে লেখাটি দেখা যায়, সেটি এখান থেকে পরিবর্তন করুন। প্রতিটি অনুচ্ছেদের (paragraph) মাঝে একটি ফাঁকা লাইন দিন।</div>
       <div class="f-group" style="margin-bottom:10px">
         <label class="f-lbl">আর্টিকেল টেক্সট</label>
@@ -9224,12 +9516,28 @@ function renderOfficeArticleSettings() {
     </div>
   `;
 }
+let _officeArticleImgEdit = '';
+function previewOfficeArticleImg(input) {
+  const file = input.files && input.files[0];
+  if (!file) return;
+  const wrap = document.getElementById('officeArticleImgPreviewWrap');
+  if (wrap) wrap.innerHTML = `<div style="font-size:12px;color:var(--sub)">⏳ ছবি আপলোড হচ্ছে...</div>`;
+  uploadImageToImgbb(file).then(url => {
+    _officeArticleImgEdit = url;
+    if (wrap) wrap.innerHTML = `<img id="officeArticleImgPreview" src="${url}" style="width:100%;max-width:260px;height:120px;object-fit:cover;border-radius:10px;border:2px solid var(--border)">`;
+  }).catch(err => {
+    alert('❌ ছবি আপলোড ব্যর্থ হয়েছে: ' + err.message);
+    input.value = '';
+  });
+}
 function doChangeOfficeArticle() {
   const val = document.getElementById('officeArticleInput').value.trim();
   if(!val) { alert('❌ খালি রাখা যাবে না!'); return; }
-  db.collection("settings").doc("app").set({ officeArticle: val }, {merge:true})
+  db.collection("settings").doc("app").set({ officeArticle: val, officeImage: _officeArticleImgEdit }, {merge:true})
     .then(()=>{
       OFFICE_ARTICLE = val;
+      OFFICE_ARTICLE_IMAGE = _officeArticleImgEdit;
+      applyOfficeArticleImage();
       alert('✅ পরিবর্তন হয়েছে!');
     })
     .catch(e=>alert('❌ সংরক্ষণ ব্যর্থ: '+e.message));
@@ -9549,13 +9857,13 @@ function settingsAction(action, schoolId) {
     document.getElementById('changeSchoolPwSub').textContent = school.name;
     document.getElementById('newSchoolPwInput').value = '';
     document.getElementById('changeSchoolPwError').textContent = '';
-    document.getElementById('changeSchoolPwModal').classList.add('active');
+    document.getElementById('changeSchoolPwModal').classList.add('active'); pushState('modal');
   } else if(action==='count') {
     document.getElementById('teacherCountSub').textContent = 'নাম ও শিক্ষক সংখ্যা পরিবর্তন করুন';
     document.getElementById('schoolNameInput').value = school.name;
     document.getElementById('teacherCountInput').value = school.teachers.length;
     document.getElementById('teacherCountError').textContent = '';
-    document.getElementById('teacherCountModal').classList.add('active');
+    document.getElementById('teacherCountModal').classList.add('active'); pushState('modal');
   } else if(action==='cluster') {
     let currentClusterId = null;
     data.clusters.forEach(c => c.schools.forEach(s => { if(s.id===schoolId) currentClusterId=c.id }));
@@ -9565,7 +9873,7 @@ function settingsAction(action, schoolId) {
     ).join('');
     document.getElementById('clusterChangeSub').textContent = school.name;
     document.getElementById('clusterChangeError').textContent = '';
-    document.getElementById('clusterChangeModal').classList.add('active');
+    document.getElementById('clusterChangeModal').classList.add('active'); pushState('modal');
   }
 }
 
@@ -9638,7 +9946,7 @@ function requireMasterPw(action) {
   masterPendingAction = action;
   document.getElementById('masterPwInput').value = '';
   document.getElementById('masterPwError').textContent = '';
-  document.getElementById('masterPwModal').classList.add('active');
+  document.getElementById('masterPwModal').classList.add('active'); pushState('modal');
   setTimeout(() => document.getElementById('masterPwInput').focus(), 100);
 }
 function confirmMasterPw() {
@@ -9662,7 +9970,7 @@ function openChangeMasterPwModal() {
   document.getElementById('newMasterPw').value = '';
   document.getElementById('confirmMasterPw').value = '';
   document.getElementById('changeMasterPwError').textContent = '';
-  document.getElementById('changeMasterPwModal').classList.add('active');
+  document.getElementById('changeMasterPwModal').classList.add('active'); pushState('modal');
 }
 function doChangeMasterPw() {
   const oldPw = document.getElementById('oldMasterPw').value.trim();
@@ -9711,7 +10019,7 @@ function openSchoolSelfPwChange(schoolId) {
   document.getElementById('selfNewPw').value='';
   document.getElementById('selfConfirmPw').value='';
   document.getElementById('selfPwError').textContent='';
-  document.getElementById('selfPwModal').classList.add('active');
+  document.getElementById('selfPwModal').classList.add('active'); pushState('modal');
 }
 function doSelfPwChange() {
   const oldPw = document.getElementById('selfOldPw').value.trim();
@@ -9748,7 +10056,7 @@ function openOfficeSelfPwModal() {
   document.getElementById('officeSelfNewPw').value='';
   document.getElementById('officeSelfConfirmPw').value='';
   document.getElementById('officeSelfPwError').textContent='';
-  document.getElementById('officeSelfPwModal').classList.add('active');
+  document.getElementById('officeSelfPwModal').classList.add('active'); pushState('modal');
 }
 function doOfficeSelfPwChange() {
   const oldPw = document.getElementById('officeSelfOldPw').value.trim();
@@ -9901,7 +10209,7 @@ function renderInfoDisplay(school) {
 function openInfoEditAuth() {
   document.getElementById('infoPwInput').value = '';
   document.getElementById('infoPwError').textContent = '';
-  document.getElementById('infoPwModal').classList.add('active');
+  document.getElementById('infoPwModal').classList.add('active'); pushState('modal');
 }
 function confirmInfoPw() {
   const pw = document.getElementById('infoPwInput').value.trim();
@@ -10067,9 +10375,11 @@ function saveSchoolInfo() {
   loadOfficeSettings();
   loadAppSettings();
   loadNoticesFromFirebase();
+  loadFilesFromFirebase();
   renderNoticeBoard();
   renderClusters(); // ডেটা লোড হওয়ার আগে খালি অবস্থায় দেখাবে, Firestore থেকে ডেটা এলেই refreshCurrentView() আপডেট করে দেবে
   applyDrawerLogo(); // Firestore থেকে menuLogo আসার আগ পর্যন্ত ফলব্যাক আইকন দেখাবে
+  applyOfficeArticleImage(); // Firestore থেকে officeImage আসার আগ পর্যন্ত ফলব্যাক আইকন দেখাবে
 })();
 
 // ══════════════════════════════
