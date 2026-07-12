@@ -50,6 +50,13 @@ body{font-family:'Hind Siliguri',sans-serif;background:var(--bg);color:var(--tex
 
 /* NOTICE BOARD */
 .notice-board{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--r);box-shadow:var(--sh);margin-bottom:20px;overflow:hidden}
+.notice-ticker{display:flex;align-items:center;gap:10px;background:var(--surface);border:1.5px solid var(--border);border-radius:var(--r);box-shadow:var(--sh);margin-bottom:20px;padding:12px 14px;cursor:pointer}
+.notice-ticker-icon{font-size:20px;flex-shrink:0}
+.notice-ticker-track{flex:1;min-width:0;overflow:hidden;white-space:nowrap;position:relative;height:18px}
+.notice-ticker-fade-text{display:block;font-size:13px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;opacity:1;transition:opacity .4s ease}
+.notice-ticker-fade-text.fading{opacity:0}
+.notice-ticker-static{font-size:13px;color:var(--sub);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block}
+.notice-ticker-arrow{font-size:12.5px;font-weight:700;color:var(--primary);white-space:nowrap;flex-shrink:0}
 .notice-hdr{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:13px 16px;background:linear-gradient(135deg,var(--surface2),#fff);border-bottom:1.5px solid var(--border);flex-wrap:wrap}
 .notice-hdr-title{font-size:14px;font-weight:700;color:var(--primary);display:flex;align-items:center;gap:6px}
 .notice-hdr-actions{display:flex;gap:6px;flex-wrap:wrap}
@@ -66,7 +73,8 @@ body{font-family:'Hind Siliguri',sans-serif;background:var(--bg);color:var(--tex
 .notice-empty{font-size:13px;color:var(--light);text-align:center;padding:6px 0;font-style:italic}
 .notice-attach-btn{display:inline-flex;align-items:center;gap:6px;padding:7px 13px;border-radius:10px;background:#EFF6FF;border:1.5px solid #BFDBFE;color:#1D4ED8;font-size:12px;font-weight:700;text-decoration:none;margin-bottom:9px}
 .notice-attach-btn:hover{background:#DBEAFE}
-.file-card{background:var(--bg);border:1.5px solid var(--border);border-radius:var(--rs);padding:12px 14px;margin-bottom:10px;display:flex;gap:12px;align-items:flex-start}
+.file-card{position:relative;background:var(--bg);border:1.5px solid var(--border);border-radius:var(--rs);padding:12px 14px;margin-bottom:10px;display:flex;gap:12px;align-items:flex-start}
+.file-card-delete-btn{position:absolute;top:8px;right:8px;width:22px;height:22px;border-radius:50%;background:#FEE2E2;color:var(--red);border:none;font-size:12px;font-weight:700;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center}
 .file-card-icon{font-size:28px;flex-shrink:0}
 .file-card-info{flex:1;min-width:0}
 .file-card-title{font-size:14px;font-weight:700;color:var(--text);margin-bottom:3px;word-break:break-word}
@@ -502,18 +510,24 @@ body{font-family:'Hind Siliguri',sans-serif;background:var(--bg);color:var(--tex
   <div class="mp-body" id="filesBody"></div>
 </div>
 
+<!-- MENU PAGE: NOTICES -->
+<div class="menu-page" id="mp-notices">
+  <div class="mp-hdr" style="display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:10px">
+  <button class="mp-back" onclick="closeMP('notices')">← Back</button>
+  <div class="mp-title" style="text-align:center">নোটিশ বোর্ড</div>
+  <button onclick="requireOfficePw(openNoticeManageModal)" style="background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.2);border-radius:20px;padding:7px 14px;color:#fff;font-size:12.5px;font-weight:600;font-family:'Hind Siliguri',sans-serif;cursor:pointer;display:flex;align-items:center;gap:5px;justify-self:end;white-space:nowrap">⚙️ সম্পাদনা</button>
+</div>
+  <div class="mp-body" id="noticeBody"></div>
+</div>
+
 
 <!-- PAGE 1: CLUSTERS -->
 <div class="page active" id="page-clusters">
   <div class="content">
-    <div class="notice-board" id="noticeBoard">
-      <div class="notice-hdr">
-        <div class="notice-hdr-title">📢 নোটিশ বোর্ড</div>
-        <div class="notice-hdr-actions">
-          <button class="notice-action-btn" onclick="requireOfficePw(openNoticeManageModal)">⚙️ সম্পাদনা</button>
-        </div>
-      </div>
-      <div class="notice-body" id="noticeBody"></div>
+    <div class="notice-ticker" id="noticeTicker" onclick="openMP('notices')">
+      <span class="notice-ticker-icon">📢</span>
+      <div class="notice-ticker-track" id="noticeTickerTrack"></div>
+      <span class="notice-ticker-arrow">সব দেখুন ›</span>
     </div>
     <div class="summary-bar">
       <div class="sum-item"><div class="sum-num" id="statTeachers">—</div><div class="sum-lbl">মোট শিক্ষক</div></div>
@@ -8597,6 +8611,7 @@ function openMP(id){
   if(id==='aueo') renderAUEO();
   if(id==='staff') renderStaff();
   if(id==='files') renderFilesList();
+  if(id==='notices') renderNoticeBoard();
   pushState('mp-'+id);
   setTimeout(()=>document.getElementById('mp-'+id).classList.add('open'),60);
 }
@@ -9070,14 +9085,48 @@ function escapeHtml(str) {
 }
 
 function renderNoticeBoard() {
+  const sorted = [...notices].sort((a, b) => (b.createdAtMs || 0) - (a.createdAtMs || 0));
   const el = document.getElementById('noticeBody');
-  if (!el) return;
-  if (notices.length === 0) {
-    el.innerHTML = `<div class="notice-empty">এখনো কোনো নোটিশ প্রকাশ করা হয়নি।</div>`;
+  if (el) {
+    if (notices.length === 0) {
+      el.innerHTML = `<div class="notice-empty">এখনো কোনো নোটিশ প্রকাশ করা হয়নি।</div>`;
+    } else {
+      el.innerHTML = `<div class="notice-list">${sorted.map(renderNoticeCardHtml).join('')}</div>`;
+    }
+  }
+  renderNoticePreviewBanner(sorted);
+}
+let _noticeTickerTimer = null;
+let _noticeTickerIdx = 0;
+function renderNoticePreviewBanner(sorted) {
+  const track = document.getElementById('noticeTickerTrack');
+  if (!track) return;
+  if (_noticeTickerTimer) { clearTimeout(_noticeTickerTimer); _noticeTickerTimer = null; }
+  if (!sorted || sorted.length === 0) {
+    track.innerHTML = `<span class="notice-ticker-static">এখনো কোনো নোটিশ নেই — নোটিশ বোর্ড দেখতে/যোগ করতে চাপুন</span>`;
     return;
   }
-  const sorted = [...notices].sort((a, b) => (b.createdAtMs || 0) - (a.createdAtMs || 0));
-  el.innerHTML = `<div class="notice-list">${sorted.map(renderNoticeCardHtml).join('')}</div>`;
+  // সর্বশেষ ২টা নোটিশের শিরোনাম পালাক্রমে (fade করে) একটার পর একটা দেখানো হয় — বার বার রিপিট হতে থাকে
+  const latestTwo = sorted.slice(0, 2).map(n => '📌 ' + (n.title || 'শিরোনামহীন'));
+  track.innerHTML = `<span class="notice-ticker-fade-text" id="noticeTickerText"></span>`;
+  _noticeTickerIdx = 0;
+  showNoticeTickerItem(latestTwo);
+}
+function showNoticeTickerItem(items) {
+  const el = document.getElementById('noticeTickerText');
+  if (!el) return;
+  const text = items[_noticeTickerIdx % items.length];
+  el.textContent = text;
+  el.classList.remove('fading');
+  // টাইটেল যত বড়, পড়ার সময়ও তত বেশি — কমপক্ষে ২.৮ সেকেন্ড, সর্বোচ্চ ৫.৫ সেকেন্ড
+  const showMs = Math.max(2800, Math.min(5500, text.length * 130));
+  _noticeTickerTimer = setTimeout(() => {
+    el.classList.add('fading'); // ধীরে ধীরে মিলিয়ে যাওয়া শুরু
+    setTimeout(() => {
+      _noticeTickerIdx++;
+      showNoticeTickerItem(items); // পরের টাইটেল দেখানো (fade-in সহ)
+    }, 400);
+  }, showMs);
 }
 function renderNoticeCardHtml(n) {
   const attachHtml = n.attachUrl ? `<a href="${escapeHtml(n.attachUrl)}" target="_blank" rel="noopener" class="notice-attach-btn" onclick="event.stopPropagation()">📎 ${escapeHtml(n.attachTitle || 'সংযুক্ত ফাইল দেখুন')}</a>` : '';
@@ -9097,7 +9146,7 @@ function renderNoticeCardHtml(n) {
 // ফাইল ম্যানেজমেন্ট — Cloudinary (Unsigned Upload) + Firestore
 // ══════════════════════════════
 const CLOUDINARY_CLOUD_NAME = "hhahasbg"; // পাথরঘাটা প্রজেক্টের Cloudinary Cloud Name
-const CLOUDINARY_UPLOAD_PRESET = "school_files_unsigned"; // ← এখনো বসানো বাকি: Settings→Upload→Add upload preset (Signing Mode: Unsigned) থেকে যে নাম দেবেন, সেটা এখানে বসান
+const CLOUDINARY_UPLOAD_PRESET = "school_files_unsigned"; // পাথরঘাটা প্রজেক্টের Cloudinary Unsigned Upload Preset
 
 let files = []; // {id, title, note, url, fileName, timestamp, viewCount, downloadCount} — Firestore থেকে লাইভ সিঙ্ক হয়
 
@@ -9124,6 +9173,7 @@ function renderFileCardHtml(f) {
   const icon = ext === 'PDF' ? '📕' : '📘';
   return `
     <div class="file-card">
+      <button class="file-card-delete-btn" onclick="requireOfficePw(()=>deleteFile('${f.id}'))" title="মুছে ফেলুন">✕</button>
       <div class="file-card-icon">${icon}</div>
       <div class="file-card-info">
         <div class="file-card-title">${escapeHtml(f.title || 'শিরোনামহীন')}</div>
@@ -9149,15 +9199,22 @@ function viewFile(id) {
 function downloadFile(id) {
   const f = files.find(x => x.id === id);
   if (!f) return;
+  // Cloudinary-কে সরাসরি ডাউনলোড (নতুন ট্যাবে ওপেন না করে) করতে বাধ্য করার জন্য fl_attachment ফ্ল্যাগ যোগ করা হয়
+  const downloadUrl = f.url.includes('/upload/') ? f.url.replace('/upload/', '/upload/fl_attachment/') : f.url;
   const a = document.createElement('a');
-  a.href = f.url;
+  a.href = downloadUrl;
   a.download = f.fileName || f.title || 'file';
-  a.target = '_blank';
   a.rel = 'noopener';
   document.body.appendChild(a);
   a.click();
   a.remove();
   db.collection("files").doc(id).update({ downloadCount: (f.downloadCount || 0) + 1 }).catch(() => {});
+}
+
+function deleteFile(id) {
+  if (!confirm('আপনি কি নিশ্চিত এই ফাইলটি তালিকা থেকে মুছে ফেলতে চান?')) return;
+  db.collection("files").doc(id).delete()
+    .catch(err => alert('❌ মুছে ফেলা যায়নি: ' + err.message));
 }
 
 function openFileUploadModal() {
@@ -9189,7 +9246,7 @@ function doUploadFile() {
   const form = new FormData();
   form.append('file', file);
   form.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
-  fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/raw/upload`, { method: 'POST', body: form })
+  fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/auto/upload`, { method: 'POST', body: form })
     .then(r => r.json())
     .then(json => {
       if (!json.secure_url) throw new Error((json.error && json.error.message) || 'Cloudinary আপলোড ব্যর্থ হয়েছে');
